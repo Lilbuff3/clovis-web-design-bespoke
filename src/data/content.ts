@@ -13,7 +13,9 @@ export const studio = {
 };
 
 export const navLinks = [
+  { label: "Proof", href: "#proof" },
   { label: "Work", href: "#work" },
+  { label: "Boost", href: "#boost" },
   { label: "Capabilities", href: "#capabilities" },
   { label: "Process", href: "#process" },
   { label: "Fees", href: "#fees" },

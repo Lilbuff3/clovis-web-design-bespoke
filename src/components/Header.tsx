@@ -55,7 +55,7 @@ export function LogoMark({ size = 30 }: { size?: number }) {
   );
 }
 
-export function Header() {
+export function Header({ isBoostPage = false }: { isBoostPage?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -80,12 +80,17 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const resolveHref = (href: string) => {
+    if (isBoostPage && href !== "#boost") return `/${href}`;
+    return href;
+  };
+
   return (
     <header className={`navbar_component ${scrolled ? "is-scrolled" : ""} ${hidden && !open ? "is-hidden" : ""} ${open ? "is-open" : ""}`}>
       <div className="padding-global">
         <div className="container-large">
           <div className="navbar_inner">
-            <a href="#top" className="navbar_logo" aria-label={`${studio.name} — home`} data-cursor="hover">
+            <a href={isBoostPage ? "/" : "#top"} className="navbar_logo" aria-label={`${studio.name} — home`} data-cursor="hover">
               <LogoMark />
               <span className="navbar_logo-text">
                 Clovis<span className="navbar_logo-sub">Web Design</span>
@@ -96,7 +101,7 @@ export function Header() {
               <ul className="navbar_links" role="list">
                 {navLinks.map((l) => (
                   <li key={l.href}>
-                    <a href={l.href} className="navbar_link">
+                    <a href={resolveHref(l.href)} className={`navbar_link ${l.href === "#boost" ? "is-boost-link" : ""}`}>
                       <span className="navbar_link-inner" data-text={l.label}>
                         {l.label}
                       </span>
@@ -137,7 +142,7 @@ export function Header() {
           <ul role="list" className="navbar_overlay-links">
             {navLinks.map((l, i) => (
               <li key={l.href} style={{ "--i": i } as React.CSSProperties}>
-                <a href={l.href} onClick={() => setOpen(false)} className="heading-style-h2">
+                <a href={resolveHref(l.href)} onClick={() => setOpen(false)} className="heading-style-h2">
                   <span className="text-style-eyebrow">0{i + 1}</span>
                   {l.label}
                 </a>
