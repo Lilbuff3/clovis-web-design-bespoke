@@ -23,7 +23,7 @@ export function Contact() {
   const [copied, setCopied] = useState(false);
 
   const message = useMemo(() => {
-    const who = name.trim() ? `Hi Adam, it's ${name.trim()}` : "Hi Adam";
+    const who = name.trim() ? `Hi, Adam! It's ${name.trim()}` : "Hi, Adam!";
     const cleanTrade = trade.trim();
     let what = "";
     if (cleanTrade) {
@@ -44,7 +44,7 @@ export function Contact() {
         : when === "This month"
           ? "looking to start this month"
           : "just looking for now";
-    return `${who}${what}. ${n}, ${w}. Can we talk?`;
+    return `${who}${what ? what + "." : ""} ${n}, ${w}. Can we talk?`;
   }, [name, trade, need, when]);
 
   const smsUrl = buildSmsHref(studio.smsHref, message);
@@ -180,10 +180,6 @@ export function Contact() {
                 </div>
 
                 <div className="contact_messages-thread">
-                  <div className="contact_bubble is-incoming">
-                    <p>Hey! This is Adam — I build the sites myself. What are you working on? 🌱</p>
-                  </div>
-
                   <div className="contact_bubble is-outgoing" key={message}>
                     <p>{message}</p>
                     <span className="contact_bubble-status">Preview · ready to send</span>
