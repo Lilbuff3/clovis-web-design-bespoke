@@ -217,7 +217,8 @@ export function Proof() {
   const pctOfTimeline = Math.min(1, t / end);
 
   return (
-    <section className="section_proof" aria-labelledby="proof-heading">
+    <section id="proof" className="section_proof" aria-labelledby="proof-heading">
+      <div id="test" className="section-anchor" aria-hidden="true" />
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <SectionHeader
@@ -271,7 +272,8 @@ export function Proof() {
                   className="proof_timeline-marker"
                   style={{ left: `${(bailThreshold / end) * 100}%` }}
                 >
-                  ↑ {bailThreshold.toFixed(1)}s: patience expires (visitor leaves)
+                  <span className="proof_marker-full">↑ {bailThreshold.toFixed(1)}s: patience expires (visitor leaves)</span>
+                  <span className="proof_marker-short">↑ {bailThreshold.toFixed(1)}s: visitor leaves</span>
                 </span>
                 <span>{end.toFixed(1)}s</span>
               </div>

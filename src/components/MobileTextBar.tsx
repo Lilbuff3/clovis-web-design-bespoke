@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { studio } from "../data/content";
+import { buildSmsHref } from "../utils/sms";
 
 export function MobileTextBar() {
   const [visible, setVisible] = useState(true);
@@ -11,12 +12,23 @@ export function MobileTextBar() {
 
     if (!contactEl && !footerEl) return;
 
+    if (typeof IntersectionObserver === "undefined") {
+      const onScroll = () => {
+        const contactTop = contactEl?.getBoundingClientRect().top ?? Infinity;
+        const footerTop = footerEl?.getBoundingClientRect().top ?? Infinity;
+        const isNearBottom = contactTop < window.innerHeight || footerTop < window.innerHeight;
+        setVisible(!isNearBottom);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         const isNearBottom = entries.some((entry) => entry.isIntersecting);
         setVisible(!isNearBottom);
       },
-      { threshold: 0.15 }
+      { threshold: 0.02 }
     );
 
     if (contactEl) observer.observe(contactEl);
@@ -32,7 +44,7 @@ export function MobileTextBar() {
     >
       <div className="mobile_text_bar-inner">
         <a
-          href={`${studio.smsHref}?&body=${encodeURIComponent("Hi Adam — saw your site, wanted to ask about a website for my business.")}`}
+          href={buildSmsHref(studio.smsHref, "Hi Adam — saw your site, wanted to ask about a website for my business.")}
           className="mobile_text_bar-sms"
           aria-label={`Text Adam at ${studio.phoneDisplay}`}
         >

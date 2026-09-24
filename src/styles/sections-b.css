@@ -537,6 +537,24 @@
   right: 1.25rem;
   transform: rotate(-3deg);
 }
+@media (max-width: 640px) {
+  .work_crate-sticker {
+    width: 8.75rem;
+    padding: 0.5rem 0.65rem;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+  .work_crate-title {
+    font-size: 0.92rem;
+  }
+  .work_crate-sticker.is-yours {
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+  .work_range {
+    touch-action: pan-y;
+  }
+}
 
 .work_brief-boxes {
   display: grid;
@@ -858,6 +876,31 @@
   width: 100%;
   justify-content: center;
 }
+.contact_footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+.contact_copy-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(251, 247, 240, 0.75);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 200ms ease;
+  font-family: inherit;
+}
+.contact_copy-btn:hover {
+  color: var(--_color---highlight);
+}
+.contact_sep {
+  color: rgba(251, 247, 240, 0.35);
+}
 .contact_call-link {
   color: rgba(251, 247, 240, 0.75);
   font-size: 0.82rem;
@@ -877,10 +920,13 @@
   display: none;
 }
 @media (max-width: 640px) {
+  body {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
   .mobile_text_bar {
     display: block;
     position: fixed;
-    bottom: 1.25rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     left: 1rem;
     right: 1rem;
     z-index: 55;

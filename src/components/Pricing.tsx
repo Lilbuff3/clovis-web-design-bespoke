@@ -1,5 +1,6 @@
 import { carePlans, studio, tiers } from "../data/content";
 import { Button, Reveal, SectionHeader } from "./primitives";
+import { buildSmsHref } from "../utils/sms";
 
 /* PriceCard component with tactile tag aesthetics */
 function PriceCard({ tier, index }: { tier: (typeof tiers)[number]; index: number }) {
@@ -54,7 +55,7 @@ function PriceCard({ tier, index }: { tier: (typeof tiers)[number]; index: numbe
 
       <Button
         label={`Pick ${tier.name}`}
-        href={`${studio.smsHref}?&body=${encodeURIComponent(`Hi Adam — I'm interested in ${tier.name} (${tier.price}). Can we talk about a website?`)}`}
+        href={buildSmsHref(studio.smsHref, `Hi Adam — I'm interested in ${tier.name} (${tier.price}). Can we talk about a website?`)}
         variant={tier.featured || isSeedling ? "accent" : "ghost"}
         className="pricing_cta"
       />
@@ -65,6 +66,7 @@ function PriceCard({ tier, index }: { tier: (typeof tiers)[number]; index: numbe
 export function Pricing() {
   return (
     <section id="fees" className="section_pricing" aria-labelledby="fees-heading">
+      <div id="pricing" className="section-anchor" aria-hidden="true" />
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <SectionHeader
@@ -98,7 +100,7 @@ export function Pricing() {
                   <span className="pricing_care-name text-style-eyebrow">{c.name}</span>
                   <div className="pricing_care-price">
                     {c.price}
-                    <small className="text-color-muted">/mo</small>
+                    <small className="text-color-muted">{c.price === "$0" ? " · always free" : "/mo"}</small>
                   </div>
                   <p className="pricing_care-body text-size-small text-color-muted">{c.body}</p>
                 </li>

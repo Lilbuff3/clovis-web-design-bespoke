@@ -1,6 +1,7 @@
 import { orchardQuote, studio } from "../data/content";
 import { useParallax } from "../hooks/motion";
 import { Button, MaskedLines, Reveal } from "./primitives";
+import { buildSmsHref } from "../utils/sms";
 
 const DETAILED_RULES = [
   {
@@ -28,7 +29,7 @@ const DETAILED_RULES = [
 export function Practice() {
   const img = useParallax<HTMLImageElement>(40);
   return (
-    <section className="section_practice" aria-label="The practice">
+    <section id="practice" className="section_practice" aria-label="The practice">
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <div className="practice_component">
@@ -91,7 +92,7 @@ export function Practice() {
 
               <Button
                 label="Text Adam directly"
-                href={`${studio.smsHref}?&body=${encodeURIComponent("Hi Adam — wanted to connect about a website project.")}`}
+                href={buildSmsHref(studio.smsHref, "Hi Adam — wanted to connect about a website project.")}
                 variant="primary"
                 magnetic
               />

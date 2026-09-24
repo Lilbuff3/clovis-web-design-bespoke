@@ -3,14 +3,34 @@ import { navLinks, studio } from "../data/content";
 import { Button } from "./primitives";
 
 export function useClovisTime() {
-  const fmt = () =>
-    new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" }).format(new Date());
-  const [time, setTime] = useState(fmt);
+  const getInfo = () => {
+    const now = new Date();
+    const time = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/Los_Angeles",
+    }).format(now);
+    const hour = Number(
+      now.toLocaleString("en-US", {
+        timeZone: "America/Los_Angeles",
+        hour: "numeric",
+        hour12: false,
+      })
+    );
+    const status =
+      hour >= 7 && hour < 19
+        ? "at the workbench"
+        : hour >= 19 && hour < 23
+          ? "winding down — text anyway"
+          : "asleep — texts answered at sunrise";
+    return { time, status };
+  };
+  const [info, setInfo] = useState(getInfo);
   useEffect(() => {
-    const id = setInterval(() => setTime(fmt()), 15000);
+    const id = setInterval(() => setInfo(getInfo()), 15000);
     return () => clearInterval(id);
   }, []);
-  return time;
+  return info;
 }
 
 export function LogoMark({ size = 30 }: { size?: number }) {
@@ -39,7 +59,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
-  const time = useClovisTime();
+  const { time, status } = useClovisTime();
 
   useEffect(() => {
     let last = window.scrollY;
@@ -87,8 +107,13 @@ export function Header() {
             </nav>
 
             <div className="navbar_actions">
-              <span className="navbar_time text-style-eyebrow" aria-label={`Local time in Clovis: ${time}`}>
+              <span
+                className="navbar_time text-style-eyebrow"
+                title={`Local time in Clovis: ${time} · Adam is ${status}`}
+                aria-label={`Local time in Clovis: ${time}, Adam is ${status}`}
+              >
                 <span className="status_dot" aria-hidden="true" /> Clovis {time}
+                <span className="navbar_time-status text-color-muted"> · {status}</span>
               </span>
               <Button label="Text Adam" href={studio.smsHref} variant="primary" showIcon={false} className="navbar_cta" />
               <button

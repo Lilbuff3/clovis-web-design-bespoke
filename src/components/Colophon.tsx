@@ -36,7 +36,7 @@ export function Colophon() {
   };
 
   return (
-    <section className="section_colophon" aria-labelledby="colophon-heading">
+    <section id="colophon" className="section_colophon" aria-labelledby="colophon-heading">
       <div className="padding-global padding-section-medium">
         <div className="container-large">
           <SectionHeader

@@ -2,6 +2,7 @@ import { useRef, useState, type CSSProperties } from "react";
 import { cases, studio, type CaseStudy } from "../data/content";
 import { prefersReducedMotion } from "../hooks/motion";
 import { Button, SectionHeader } from "./primitives";
+import { buildSmsHref } from "../utils/sms";
 
 function AfterSite({ c }: { c: CaseStudy }) {
   const isKidney = c.id === "kidney";
@@ -191,6 +192,25 @@ export function Work() {
   const isYours = active === cases.length;
   const c = cases[Math.min(active, cases.length - 1)];
 
+  const tabList = [
+    ...cases.map((x) => ({ id: x.id, index: x.index, label: x.client })),
+    { id: "yours", index: "03", label: "Reserved for you" },
+  ];
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const onTabKeyDown = (e: React.KeyboardEvent) => {
+    const n = tabList.length;
+    let next = active;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (active + 1) % n;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (active - 1 + n) % n;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = n - 1;
+    else return;
+    e.preventDefault();
+    setActive(next);
+    tabRefs.current[next]?.focus();
+  };
+
   return (
     <section id="work" className="section_work" aria-labelledby="work-heading">
       <div className="padding-global padding-section-large">
@@ -203,13 +223,23 @@ export function Work() {
             lede={<p>Not a gallery of Figma mockups — real Central Valley businesses with real commercial outcomes. Open either on your phone out in the parking lot and time it yourself.</p>}
           />
 
-          <div className="work_tabs" role="tablist" aria-label="Case studies">
-            {[...cases.map((x) => ({ id: x.id, index: x.index, label: x.client })), { id: "yours", index: "03", label: "Reserved for you" }].map((t, i) => (
+          <div
+            className="work_tabs"
+            role="tablist"
+            aria-label="Case studies"
+            onKeyDown={onTabKeyDown}
+          >
+            {tabList.map((t, i) => (
               <button
                 key={t.id}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
+                id={`work-tab-${t.id}`}
                 role="tab"
                 aria-selected={active === i}
                 aria-controls="work-panel"
+                tabIndex={active === i ? 0 : -1}
                 className={`work_tab ${active === i ? "is-active" : ""}`}
                 onClick={() => setActive(i)}
               >
@@ -219,7 +249,13 @@ export function Work() {
             ))}
           </div>
 
-          <div id="work-panel" role="tabpanel" key={isYours ? "yours" : c.id} className="work_component">
+          <div
+            id="work-panel"
+            role="tabpanel"
+            aria-labelledby={`work-tab-${tabList[active].id}`}
+            key={isYours ? "yours" : c.id}
+            className="work_component"
+          >
             {isYours ? (
               <div className="work_yours-spread">
                 <div className="work_yours-visual">
@@ -255,7 +291,7 @@ export function Work() {
                   <div className="button-group">
                     <Button
                       label="Claim a slot by text"
-                      href={`${studio.smsHref}?&body=${encodeURIComponent("Hi Adam — I want to claim one of the $500 launch spots for my business.")}`}
+                      href={buildSmsHref(studio.smsHref, "Hi Adam — I want to claim one of the $500 launch spots for my business.")}
                       variant="accent"
                       magnetic
                     />

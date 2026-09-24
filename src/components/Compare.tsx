@@ -5,7 +5,7 @@ import { Reveal, SectionHeader } from "./primitives";
 export function Compare() {
   const [studioView, setStudioView] = useState(true);
   return (
-    <section className="section_compare" aria-labelledby="compare-heading">
+    <section id="compare" className="section_compare" aria-labelledby="compare-heading">
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <SectionHeader

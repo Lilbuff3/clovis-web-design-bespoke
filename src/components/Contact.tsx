@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { studio } from "../data/content";
 import { useParallax } from "../hooks/motion";
 import { MaskedLines, Reveal } from "./primitives";
+import { buildSmsHref } from "../utils/sms";
 
 const NEEDS = [
   "A one-page site ($500)",
@@ -19,14 +20,24 @@ export function Contact() {
   const [need, setNeed] = useState(NEEDS[0]);
   const [when, setWhen] = useState(WHENS[0]);
   const [sent, setSent] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const message = useMemo(() => {
     const who = name.trim() ? `Hi Adam, it's ${name.trim()}` : "Hi Adam";
-    const what = trade.trim() ? ` — I run a ${trade.trim()} business` : "";
+    const cleanTrade = trade.trim();
+    let what = "";
+    if (cleanTrade) {
+      if (/^(i |we )/i.test(cleanTrade)) {
+        what = ` — ${cleanTrade}`;
+      } else {
+        what = ` — I run ${cleanTrade}`;
+      }
+    }
+    const cleanNeed = need.replace(/ \(.*\)/, "").trim();
     const n =
       need === "Not sure yet"
         ? "I'm not sure what I need yet"
-        : `I'm interested in ${need.replace(/ \(.*\)/, "").replace(/^A /, "a ")}`;
+        : `I'm interested in ${cleanNeed.charAt(0).toLowerCase() + cleanNeed.slice(1)}`;
     const w =
       when === "ASAP"
         ? "hoping to get going ASAP"
@@ -36,12 +47,22 @@ export function Contact() {
     return `${who}${what}. ${n}, ${w}. Can we talk?`;
   }, [name, trade, need, when]);
 
-  const smsUrl = `${studio.smsHref}?&body=${encodeURIComponent(message)}`;
+  const smsUrl = buildSmsHref(studio.smsHref, message);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setSent(true);
     window.location.href = smsUrl;
+  };
+
+  const copyMessage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(message).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2200);
+      });
+    }
   };
 
   return (
@@ -66,7 +87,15 @@ export function Contact() {
               </Reveal>
 
               <Reveal index={1} className="contact_interactive-form">
-                <div className="contact_form-inputs">
+                <div
+                  className="contact_form-inputs"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onSubmit(e);
+                    }
+                  }}
+                >
                   <div className="contact_field">
                     <label htmlFor="c-name" className="text-style-eyebrow">Your name</label>
                     <input
@@ -85,7 +114,7 @@ export function Contact() {
                       id="c-trade"
                       value={trade}
                       onChange={(e) => setTrade(e.target.value)}
-                      placeholder="Taquería in Old Town, plumbing, roofing…"
+                      placeholder="a taquería in Old Town, plumbing, roofing…"
                       className="contact_input-text"
                     />
                   </div>
@@ -161,7 +190,7 @@ export function Contact() {
                   </div>
                 </div>
 
-                <form onSubmit={onSubmit} className="contact_phone-footer">
+                <div className="contact_phone-footer">
                   <a
                     href={smsUrl}
                     className="button is-accent contact_sms-btn"
@@ -169,10 +198,21 @@ export function Contact() {
                   >
                     <span>{sent ? "Opening Messages…" : "Send this to Adam →"}</span>
                   </a>
-                  <a href={studio.phoneHref} className="contact_call-link">
-                    or call {studio.phoneDisplay}
-                  </a>
-                </form>
+                  <div className="contact_footer-actions">
+                    <button
+                      type="button"
+                      className="contact_copy-btn"
+                      onClick={copyMessage}
+                      title="Copy draft message to clipboard"
+                    >
+                      {copied ? "Copied message ✓" : "Copy text message"}
+                    </button>
+                    <span className="contact_sep" aria-hidden="true">·</span>
+                    <a href={studio.phoneHref} className="contact_call-link">
+                      or call {studio.phoneDisplay}
+                    </a>
+                  </div>
+                </div>
               </div>
 
               <dl className="contact_facts text-size-small">

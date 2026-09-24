@@ -6,6 +6,7 @@ export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section id="questions" className="section_faq" aria-labelledby="faq-heading">
+      <div id="faq" className="section-anchor" aria-hidden="true" />
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <div className="faq_component">

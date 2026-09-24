@@ -2,7 +2,7 @@ import { navLinks, studio } from "../data/content";
 import { LogoMark, useClovisTime } from "./Header";
 
 export function Footer() {
-  const time = useClovisTime();
+  const { time, status } = useClovisTime();
   return (
     <footer className="footer_component">
       <div className="padding-global">
@@ -59,7 +59,7 @@ export function Footer() {
           <div className="footer_bottom text-style-eyebrow">
             <span>© {new Date().getFullYear()} {studio.name}</span>
             <span>
-              <span className="status_dot" aria-hidden="true" /> Clovis, CA · {time}
+              <span className="status_dot" aria-hidden="true" /> Clovis, CA · {time} ({status})
             </span>
             <a href="#top" className="footer_top-link">
               Back to top ↑

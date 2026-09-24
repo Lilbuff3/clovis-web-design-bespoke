@@ -29,7 +29,7 @@ export function Manifesto() {
   });
 
   return (
-    <section ref={section} className="section_manifesto" aria-labelledby="manifesto-heading">
+    <section id="manifesto" ref={section} className="section_manifesto" aria-labelledby="manifesto-heading">
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <div className="manifesto_component">

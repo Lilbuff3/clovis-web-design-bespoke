@@ -3,7 +3,7 @@ import { Reveal, SectionHeader } from "./primitives";
 
 export function Letters() {
   return (
-    <section className="section_letters" aria-labelledby="letters-heading">
+    <section id="letters" className="section_letters" aria-labelledby="letters-heading">
       <div className="padding-global padding-section-large">
         <div className="container-large">
           <SectionHeader
