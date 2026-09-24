@@ -24,15 +24,19 @@ export function Letters() {
                   <p>{t.quote}</p>
                 </blockquote>
                 <figcaption>
-                  <span className="letters_avatar" aria-hidden="true">
-                    {t.name
-                      .replace("Dr. ", "")
-                      .split(" ")
-                      .filter((w) => /^[A-Z]/.test(w))
-                      .slice(0, 2)
-                      .map((w) => w[0])
-                      .join("")}
-                  </span>
+                  {t.avatar ? (
+                    <img src={t.avatar} alt={t.name} className="letters_avatar-photo" loading="lazy" />
+                  ) : (
+                    <span className="letters_avatar" aria-hidden="true">
+                      {t.name
+                        .replace("Dr. ", "")
+                        .split(" ")
+                        .filter((w) => /^[A-Z]/.test(w))
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join("")}
+                    </span>
+                  )}
                   <span>
                     <b>{t.name}</b>
                     <span className="text-size-small">

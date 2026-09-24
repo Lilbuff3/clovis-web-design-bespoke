@@ -90,10 +90,28 @@ export type CaseStudy = {
   id: string;
   index: string;
   client: string;
+  url: string;
+  urlDisplay: string;
   sector: string;
   place: string;
   year: string;
   img: string;
+  previewImg: string;
+  avatarImg?: string;
+  beforeMetrics: {
+    score: number;
+    loadTime: string;
+    label: string;
+    description: string;
+    badge: string;
+  };
+  afterMetrics: {
+    score: number;
+    loadTime: string;
+    label: string;
+    description: string;
+    badge: string;
+  };
   headline: string;
   complaint: string;
   prescription: string[];
@@ -102,6 +120,7 @@ export type CaseStudy = {
   palette: { bg: string; ink: string; accent: string; soft: string };
   quote: string;
   quoteBy: string;
+  quoteRole?: string;
 };
 
 export const orchardQuote = {
@@ -115,10 +134,28 @@ export const cases: CaseStudy[] = [
     id: "kidney",
     index: "01",
     client: "Kidney Specialist Inc.",
+    url: "https://www.kidneyspecialistinc.com",
+    urlDisplay: "kidneyspecialistinc.com",
     sector: "Nephrology practice",
     place: "Madera & Fresno, CA",
     year: "2025",
     img: "./images/kidney.jpg",
+    previewImg: "./images/kidney-preview.webp",
+    avatarImg: "./images/dr-masood.jpg",
+    beforeMetrics: {
+      score: 42,
+      loadTime: "3.8s",
+      label: "Legacy WordPress theme",
+      description: "Insecure forms requesting PHI, 4.2MB uncompressed assets, poor 2.8:1 text contrast.",
+      badge: "PageSpeed 42/100 · 3.8s mobile",
+    },
+    afterMetrics: {
+      score: 100,
+      loadTime: "0.7s",
+      label: "Hand-built Astro application",
+      description: "Zero-PHI web architecture, print-ready referral fax, 12.6:1 AAA text contrast.",
+      badge: "PageSpeed 100/100 · 0.7s mobile",
+    },
     headline: "A medical site that never touches patient data — and scores 100 on Google’s speed test.",
     complaint: "The old forms asked patients for health details a website had no business holding.",
     prescription: ["No patient data on the web", "Printable forms instead of online ones", "Guides patients actually use"],
@@ -129,17 +166,36 @@ export const cases: CaseStudy[] = [
       { value: "12.6:1", label: "Text contrast ratio" },
     ],
     palette: { bg: "#EEF2EC", ink: "#18332B", accent: "#2F7A64", soft: "#D5E3DA" },
-    quote: "He made a professional-grade website that looked stunning while protecting the rights of my patients.",
+    quote: "He made a professional-grade website that looked stunning while protecting the rights of my patients and protecting my practice.",
     quoteBy: "Dr. Sheikh Mohammad Masood, MD",
+    quoteRole: "Founding President & Medical Director",
   },
   {
     id: "bigbros",
     index: "02",
     client: "Big Bros Dumpster Rentals",
+    url: "https://bigbrosdumpster.com",
+    urlDisplay: "bigbrosdumpster.com",
     sector: "Roll-off dumpster rental",
     place: "Fresno & Clovis, CA",
     year: "2025",
     img: "./images/bigbros.jpg",
+    previewImg: "./images/big-bros-preview.webp",
+    avatarImg: "./images/bigbros-family.webp",
+    beforeMetrics: {
+      score: 38,
+      loadTime: "7.2s",
+      label: "Bloated broker template",
+      description: "Single generic page, outranked by national middlemen, hidden fees, English only.",
+      badge: "PageSpeed 38/100 · 7.2s mobile",
+    },
+    afterMetrics: {
+      score: 100,
+      loadTime: "0.8s",
+      label: "Hand-built local authority site",
+      description: "#1 on Google for “dumpster rental Fresno”, published flat pricing, text-to-book.",
+      badge: "PageSpeed 100/100 · 0.8s mobile",
+    },
     headline: "Number one on Google for dumpster rental in Fresno — ahead of the national brokers.",
     complaint: "National brokers were outranking the company that actually owns the trucks.",
     prescription: ["A page per service area", "Flat prices, right on the page", "Driveway protection, said out loud"],
@@ -150,8 +206,9 @@ export const cases: CaseStudy[] = [
       { value: "1–2", label: "Avg. position, high-intent" },
     ],
     palette: { bg: "#FFF4E2", ink: "#231A10", accent: "#E8712A", soft: "#F6D9A8" },
-    quote: "Contractors and homeowners in Fresno and Clovis text us directly. We’ve had to buy 4 more trucks.",
+    quote: "Contractors and homeowners in Fresno and Clovis text us directly. We’ve had to buy 4 more trucks just to keep up with the volume.",
     quoteBy: "William Maldonado Ramirez",
+    quoteRole: "Co-Owner & Head of Operations",
   },
 ];
 
@@ -257,6 +314,7 @@ export const testimonials = [
     name: "Dr. Sheikh Mohammad Masood, MD",
     role: "Founding President & Medical Director",
     org: "Kidney Specialist Inc.",
+    avatar: "./images/dr-masood.jpg",
   },
   {
     quote:
@@ -264,6 +322,7 @@ export const testimonials = [
     name: "William Maldonado Ramirez",
     role: "Co-Owner & Head of Operations",
     org: "Big Bros Dumpster Rentals",
+    avatar: "./images/bigbros-family.webp",
   },
 ];
 

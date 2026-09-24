@@ -20,7 +20,7 @@ const scale = [
 ];
 
 const assets = [
-  { t: "Photography", d: "Natural window light, 35mm film grain (Portra 400), long raking shadows. Subjects: paper, hands, produce, tools. Never screens, never stock handshakes." },
+  { t: "Photography", d: "Natural window light, 35mm film grain, long raking shadows. Subjects: paper, hands, produce, tools, and real client production work. Never generic stock templates." },
   { t: "Illustration", d: "Built from CSS & SVG at runtime — browser mockups, gauges, maps. Zero raster weight, always crisp, always on-brand." },
   { t: "Texture", d: "One 220px SVG fractal-noise layer, multiplied at 32% — gives the paper tooth without a single image request." },
   { t: "Motion", d: "Out-expo easing (0.16, 1, 0.3, 1). Reveals ≤ 1.2s, staggers of 80–90ms. Everything collapses to static under prefers-reduced-motion." },

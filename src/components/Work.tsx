@@ -7,84 +7,196 @@ import { buildSmsHref } from "../utils/sms";
 function AfterSite({ c }: { c: CaseStudy }) {
   const isKidney = c.id === "kidney";
   return (
-    <div className="site-after" style={{ "--s-bg": c.palette.bg, "--s-ink": c.palette.ink, "--s-accent": c.palette.accent, "--s-soft": c.palette.soft } as CSSProperties}>
+    <div
+      className="site-after"
+      style={
+        {
+          "--s-bg": c.palette.bg,
+          "--s-ink": c.palette.ink,
+          "--s-accent": c.palette.accent,
+          "--s-soft": c.palette.soft,
+        } as CSSProperties
+      }
+    >
+      <div className="site-after_score">
+        <span>●</span> {c.afterMetrics.badge}
+      </div>
+
       <div className="site-after_nav">
-        <span className="site-after_logo">{isKidney ? "Kidney Specialist" : "BIG BROS"}</span>
-        <span className="site-after_links">
-          <i /> <i /> <i />
+        <span className="site-after_logo">{isKidney ? "Kidney Specialist Inc." : "BIG BROS"}</span>
+        <span className="site-after_nav-links">
+          {isKidney ? (
+            <>
+              <span>Doctors</span>
+              <span>Services</span>
+              <span>Referrals</span>
+            </>
+          ) : (
+            <>
+              <span>Sizes & Pricing</span>
+              <span>Quick Quote</span>
+              <span>FAQ</span>
+            </>
+          )}
         </span>
         <span className="site-after_lang">EN · ES</span>
-        <span className="site-after_btn">{isKidney ? "Call office" : "Text to book"}</span>
+        <span className="site-after_btn">{isKidney ? "Call (559)" : "Text (559)"}</span>
       </div>
+
       <div className="site-after_hero">
         <div className="site-after_copy">
-          <span className="site-after_eyebrow">{isKidney ? "Nephrology · Madera & Fresno" : "Roll-off rental · Fresno & Clovis"}</span>
-          <div className="site-after_h">{isKidney ? "Kidney care, close to home." : "Dumpsters dropped today. Flat price."}</div>
-          <div className="site-after_p" />
-          <div className="site-after_p is-short" />
+          <span className="site-after_eyebrow">
+            {isKidney ? "Nephrology & Internal Medicine · Madera & Fresno" : "Fresno Roll-Off Dumpster Rental"}
+          </span>
+          <div className="site-after_h">
+            {isKidney ? "Expert Kidney Care for the Valley." : "Clear space. Clear mind."}
+          </div>
+          <p className="site-after_p-text">
+            {isKidney
+              ? "Comprehensive, compassionate renal care from fellowship-trained nephrologists."
+              : "Flat-rate 14 & 20 yard dumpsters dropped on your driveway. Text a photo of your pile."}
+          </p>
           <div className="site-after_ctas">
-            <span className="is-primary">{isKidney ? "New patient guide" : "See flat prices"}</span>
-            <span>{isKidney ? "Referral fax" : "Driveway protection"}</span>
+            <span className="is-primary">{isKidney ? "Patient Guide" : "See Flat Prices"}</span>
+            <span>{isKidney ? "Referral Fax: (559) 661-1952" : "Driveway Protected"}</span>
           </div>
         </div>
+
         <div className="site-after_art">
           {isKidney ? (
-            <svg viewBox="0 0 120 120" aria-hidden="true">
-              <circle cx="60" cy="60" r="54" fill="var(--s-soft)" />
-              <path d="M44 34c-14 0-22 14-22 28s8 26 20 26c8 0 12-6 12-14V48c0-8-4-14-10-14zM76 34c14 0 22 14 22 28s-8 26-20 26c-8 0-12-6-12-14V48c0-8 4-14 10-14z" fill="var(--s-accent)" opacity=".9" />
-            </svg>
+            <div className="site-after_doctor-card">
+              <img
+                src={c.avatarImg || "./images/dr-masood.jpg"}
+                alt="Dr. Sheikh Mohammad Masood, MD"
+                className="site-after_doctor-img"
+              />
+              <div>
+                <b style={{ fontSize: "1.4cqw", display: "block" }}>Dr. Masood, MD</b>
+                <span style={{ fontSize: "1.15cqw", opacity: 0.75 }}>Nephrologist · Madera & Fresno</span>
+              </div>
+            </div>
           ) : (
-            <svg viewBox="0 0 140 100" aria-hidden="true">
-              <rect x="0" y="0" width="140" height="100" rx="10" fill="var(--s-soft)" />
-              <path d="M18 40h82l-8 34H26z" fill="var(--s-accent)" />
-              <rect x="100" y="48" width="22" height="26" rx="3" fill="var(--s-ink)" />
-              <circle cx="40" cy="80" r="7" fill="var(--s-ink)" />
-              <circle cx="108" cy="80" r="7" fill="var(--s-ink)" />
-            </svg>
+            <div className="site-after_pricing-boxes">
+              <div className="site-after_price-box">
+                <div>
+                  <b style={{ fontSize: "1.35cqw" }}>14-Yard Roll-off</b>
+                  <div style={{ fontSize: "1.05cqw", opacity: 0.7 }}>Cleanouts & small remodels</div>
+                </div>
+                <b style={{ fontSize: "1.6cqw", color: "var(--s-accent)" }}>$399 flat</b>
+              </div>
+              <div className="site-after_price-box">
+                <div>
+                  <b style={{ fontSize: "1.35cqw" }}>20-Yard Roll-off</b>
+                  <div style={{ fontSize: "1.05cqw", opacity: 0.7 }}>Renovations & big volume</div>
+                </div>
+                <b style={{ fontSize: "1.6cqw", color: "var(--s-accent)" }}>$499 flat</b>
+              </div>
+            </div>
           )}
         </div>
       </div>
+
       <div className="site-after_cards">
-        {(isKidney ? ["Dialysis", "Transplant", "CKD care"] : ["10 yard", "20 yard", "30 yard"]).map((t) => (
-          <div key={t} className="site-after_card">
-            <b>{t}</b>
-            <i />
+        {(isKidney
+          ? [
+              { title: "Dialysis Care", desc: "Peritoneal & Hemodialysis" },
+              { title: "CKD Management", desc: "Stages 1–5 Care Plans" },
+              { title: "Zero Web PHI", desc: "HIPAA Compliant Fax" },
+            ]
+          : [
+              { title: "Driveway Protection", desc: "Boards under all wheels" },
+              { title: "Flat Rates", desc: "7-day rental included" },
+              { title: "Text-to-Book", desc: "Instant quote direct to owner" },
+            ]
+        ).map((t) => (
+          <div key={t.title} className="site-after_card">
+            <b>{t.title}</b>
+            <span>{t.desc}</span>
           </div>
         ))}
       </div>
-      <div className="site-after_sticky">{isKidney ? "Call (559) · Fax referrals" : "Text (559) · One tap to book"}</div>
+
+      <div className="site-after_sticky">
+        {isKidney
+          ? "No patient data collected online · Call (559) 661-1965"
+          : "Delivering today across Fresno & Clovis · Text (559) 495-8034"}
+      </div>
     </div>
   );
 }
 
-function BeforeSite() {
+function BeforeSite({ c }: { c: CaseStudy }) {
+  const isKidney = c.id === "kidney";
   return (
     <div className="site-before" aria-hidden="true">
+      <div className="site-before_score">
+        <span>●</span> {c.beforeMetrics.badge}
+      </div>
+
       <div className="site-before_nav">
-        <span>LOGO HERE</span>
-        <span>Home | About | Services | Blog | Gallery | Contact</span>
+        <span>{isKidney ? "MADERA NEPHROLOGY (OLD PORTAL)" : "FRESNO COMMERCIAL DUMPSTERS"}</span>
+        <span>Home | About | Services | Blog | Staff | Contact | Portal</span>
       </div>
-      <div className="site-before_slider">
+
+      <div className="site-before_banner">
         <div className="site-before_spinner" />
-        <span className="site-before_dots">● ○ ○ ○ ○</span>
+        <span>
+          {isKidney
+            ? "Loading patient portal plugins, tracking scripts, and heavy widgets (4.2 MB)..."
+            : "Loading 8 uncompressed stock photos in slider carousel (12.4 MB)..."}
+        </span>
       </div>
-      <div className="site-before_h">Welcome To Our Website!!</div>
-      <div className="site-before_lines">
-        <i /> <i /> <i /> <i />
+
+      <div className="site-before_h">
+        {isKidney ? "Welcome To Our Practice Website!!" : "Fresno Dumpsters Starting At $199*!!"}
       </div>
-      <div className="site-before_popup">
-        <b>Subscribe to our newsletter!</b>
-        <span>No thanks ✕</span>
+
+      {isKidney ? (
+        <div className="site-before_form-box">
+          <div className="site-before_form-title">
+            ⚠️ Online Patient Intake (Insecure HTTP Form)
+          </div>
+          <div className="site-before_form-inputs">
+            <div className="site-before_form-input">Patient Full Name & SSN...</div>
+            <div className="site-before_form-input">Symptoms & Medical History...</div>
+            <div className="site-before_form-input">Insurance Policy Number...</div>
+            <div className="site-before_form-input">[Upload Insurance Card JPEG]</div>
+          </div>
+        </div>
+      ) : (
+        <div className="site-before_form-box">
+          <div className="site-before_form-title">
+            ⚠️ National Broker Booking Form
+          </div>
+          <div style={{ fontSize: "1.1cqw", color: "#666" }}>
+            *Teaser rate of $199 excludes $150 delivery surcharge, $85/ton overage, fuel fee, and processing fees.
+          </div>
+          <div className="site-before_form-inputs">
+            <div className="site-before_form-input">Your Zip Code...</div>
+            <div className="site-before_form-input">[Submit to National Call Center]</div>
+          </div>
+        </div>
+      )}
+
+      {!isKidney && (
+        <div className="site-before_popup">
+          <b>WAIT! Don't leave yet!</b>
+          <span>Sign up for our newsletter to get 5% off</span>
+          <span style={{ fontSize: "1cqw", color: "#999", textDecoration: "underline" }}>No thanks ✕</span>
+        </div>
+      )}
+
+      <div className="site-before_cookie">
+        <span>This site uses 18 third-party advertising cookies.</span>
+        <span style={{ background: "#444", padding: "0.4cqw 1cqw", borderRadius: "4px" }}>ACCEPT ALL</span>
       </div>
-      <div className="site-before_cookie">This site uses cookies. ACCEPT · SETTINGS</div>
-      <div className="site-before_score">PageSpeed 31</div>
     </div>
   );
 }
 
 function Visualizer({ c }: { c: CaseStudy }) {
-  const [pos, setPos] = useState(58);
-  const [showPhoto, setShowPhoto] = useState(false);
+  const [pos, setPos] = useState(54);
+  const [viewMode, setViewMode] = useState<"split" | "preview" | "field">("split");
   const frame = useRef<HTMLDivElement>(null);
 
   const tilt = (e: React.PointerEvent) => {
@@ -104,15 +216,22 @@ function Visualizer({ c }: { c: CaseStudy }) {
       <div className="work_visualizer-toggles">
         <button
           type="button"
-          className={`work_view-btn ${!showPhoto ? "is-active" : ""}`}
-          onClick={() => setShowPhoto(false)}
+          className={`work_view-btn ${viewMode === "split" ? "is-active" : ""}`}
+          onClick={() => setViewMode("split")}
         >
           Interactive Code Split
         </button>
         <button
           type="button"
-          className={`work_view-btn ${showPhoto ? "is-active" : ""}`}
-          onClick={() => setShowPhoto(true)}
+          className={`work_view-btn ${viewMode === "preview" ? "is-active" : ""}`}
+          onClick={() => setViewMode("preview")}
+        >
+          Live Website Design
+        </button>
+        <button
+          type="button"
+          className={`work_view-btn ${viewMode === "field" ? "is-active" : ""}`}
+          onClick={() => setViewMode("field")}
         >
           Field Photography Proof
         </button>
@@ -123,13 +242,66 @@ function Visualizer({ c }: { c: CaseStudy }) {
           <span className="work_browser-dots">
             <i /> <i /> <i />
           </span>
-          <span className="work_browser-url">
-            {c.client.toLowerCase().replace(/[^a-z]+/g, "")}.com
-          </span>
-          <span className="work_browser-score">● 100/100</span>
+          <a
+            href={c.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="work_browser-url"
+            title={`Visit live production site: ${c.urlDisplay}`}
+          >
+            {c.urlDisplay} ↗
+          </a>
+          <div className="work_browser-scores">
+            {viewMode === "split" ? (
+              <>
+                <span className="work_browser-score is-legacy">
+                  Legacy: {c.beforeMetrics.score}/100
+                </span>
+                <span className="score-sep">vs</span>
+                <span className="work_browser-score is-shipped">
+                  Shipped: 100/100
+                </span>
+              </>
+            ) : (
+              <span className="work_browser-score is-shipped">
+                ● 100/100 PageSpeed
+              </span>
+            )}
+          </div>
         </div>
 
-        {showPhoto ? (
+        {viewMode === "preview" ? (
+          <div className="work_preview-stage">
+            <img
+              src={c.previewImg}
+              alt={`Live website design for ${c.client} by Clovis Web Design`}
+              className="work_preview-img"
+              loading="lazy"
+            />
+            <div className="work_preview-overlay" />
+            <a
+              href={c.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="work_preview-cta"
+            >
+              <span>Visit live website: {c.urlDisplay}</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <div className="work_photo-badge">
+              <span className="text-style-eyebrow">{c.place}</span>
+              <span className="work_photo-pill">100 PageSpeed</span>
+            </div>
+            <div className="work_crate-sticker" aria-hidden="true">
+              <div className="work_crate-top">
+                <span>CRATE</span>
+                <span>Nº {c.index}</span>
+              </div>
+              <div className="work_crate-title">{c.client}</div>
+              <div className="work_crate-sub">Production Site · Clovis CA</div>
+            </div>
+          </div>
+        ) : viewMode === "field" ? (
           <div className="work_photo-stage">
             <img
               src={c.img}
@@ -140,9 +312,8 @@ function Visualizer({ c }: { c: CaseStudy }) {
             <div className="work_photo-overlay" />
             <div className="work_photo-badge">
               <span className="text-style-eyebrow">{c.place}</span>
-              <span className="work_photo-pill">100 PageSpeed</span>
+              <span className="work_photo-pill">Verified Client</span>
             </div>
-            {/* Crate tag sticker */}
             <div className="work_crate-sticker" aria-hidden="true">
               <div className="work_crate-top">
                 <span>CRATE</span>
@@ -156,13 +327,17 @@ function Visualizer({ c }: { c: CaseStudy }) {
           <div className="work_browser-stage" style={{ "--pos": `${pos}%` } as CSSProperties}>
             <AfterSite c={c} />
             <div className="work_before-layer">
-              <BeforeSite />
+              <BeforeSite c={c} />
             </div>
             <div className="work_handle" aria-hidden="true">
               <span>⟷</span>
             </div>
-            <span className="work_tag is-before text-style-eyebrow">Typical template</span>
-            <span className="work_tag is-after text-style-eyebrow">What we shipped</span>
+            <span className="work_tag is-before text-style-eyebrow">
+              Legacy: {c.beforeMetrics.score}/100 ({c.beforeMetrics.loadTime})
+            </span>
+            <span className="work_tag is-after text-style-eyebrow">
+              Shipped: 100/100 ({c.afterMetrics.loadTime})
+            </span>
             <input
               className="work_range"
               type="range"
@@ -170,7 +345,7 @@ function Visualizer({ c }: { c: CaseStudy }) {
               max={100}
               value={pos}
               onChange={(e) => setPos(Number(e.target.value))}
-              aria-label="Drag to compare a typical template with the finished site"
+              aria-label="Drag to compare bloated legacy template against hand-coded site"
               data-cursor="label"
               data-cursor-label="Drag"
             />
@@ -179,9 +354,11 @@ function Visualizer({ c }: { c: CaseStudy }) {
       </div>
 
       <p className="work_note text-size-small text-color-muted">
-        {showPhoto
-          ? `Real field photograph from ${c.client} in ${c.place}.`
-          : "Drag slider to compare a typical bloated agency template against the hand-coded site."}
+        {viewMode === "preview"
+          ? `Real production website designed and hand-coded for ${c.client}.`
+          : viewMode === "field"
+            ? `Real operational field photograph from ${c.client} in ${c.place}.`
+            : `Drag slider to compare the legacy bloated site (${c.beforeMetrics.score}/100, ${c.beforeMetrics.loadTime}) against the hand-coded site (100/100, ${c.afterMetrics.loadTime}).`}
       </p>
     </div>
   );
@@ -307,16 +484,34 @@ export function Work() {
                     <span>{c.sector}</span>
                     <span>{c.place}</span>
                     <span>{c.year}</span>
+                    <a
+                      href={c.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="work_live-link"
+                      title={`Visit ${c.client} live site`}
+                    >
+                      <span>Live site:</span>
+                      <span className="work_live-link-url">{c.urlDisplay}</span>
+                      <span aria-hidden="true">↗</span>
+                    </a>
                   </div>
                   <h3 className="heading-style-h3">{c.headline}</h3>
 
                   <div className="work_brief-boxes">
                     <div className="work_brief-box is-weeds">
-                      <h4 className="text-style-eyebrow text-color-accent">The weeds</h4>
+                      <h4 className="text-style-eyebrow text-color-accent">
+                        The weeds · {c.beforeMetrics.label} ({c.beforeMetrics.score}/100)
+                      </h4>
                       <p className="text-size-small">{c.complaint}</p>
+                      <p className="text-size-small text-color-muted" style={{ marginTop: "0.4rem" }}>
+                        {c.beforeMetrics.description}
+                      </p>
                     </div>
                     <div className="work_brief-box is-planted">
-                      <h4 className="text-style-eyebrow text-color-brand-soft">What we planted</h4>
+                      <h4 className="text-style-eyebrow text-color-brand-soft">
+                        What we planted · {c.afterMetrics.label} ({c.afterMetrics.score}/100)
+                      </h4>
                       <ol className="work_rx" role="list">
                         {c.prescription.map((p, i) => (
                           <li key={p}>
@@ -347,8 +542,23 @@ export function Work() {
                   </ul>
 
                   <blockquote className="work_quote">
+                    <div className="work_quote-author">
+                      {c.avatarImg && (
+                        <img
+                          src={c.avatarImg}
+                          alt={c.quoteBy}
+                          className="work_quote-avatar"
+                          loading="lazy"
+                        />
+                      )}
+                      <div>
+                        <cite className="work_quote-name">{c.quoteBy}</cite>
+                        {c.quoteRole && (
+                          <span className="work_quote-role">{c.quoteRole}</span>
+                        )}
+                      </div>
+                    </div>
                     <p>“{c.quote}”</p>
-                    <cite>— {c.quoteBy}</cite>
                   </blockquote>
                 </div>
               </>
