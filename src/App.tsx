@@ -15,6 +15,8 @@ import { Colophon } from "./components/Colophon";
 import { Footer } from "./components/Footer";
 import { Cursor, ScrollProgress } from "./components/primitives";
 
+import { MobileTextBar } from "./components/MobileTextBar";
+
 /**
  * Client-First page architecture:
  * page-wrapper > main-wrapper > section_[name] > padding-global > container-[size] > [name]_component
@@ -44,6 +46,7 @@ export default function App() {
         <Colophon />
       </main>
       <Footer />
+      <MobileTextBar />
     </div>
   );
 }

@@ -13,7 +13,7 @@ function AfterSite({ c }: { c: CaseStudy }) {
           <i /> <i /> <i />
         </span>
         <span className="site-after_lang">EN · ES</span>
-        <span className="site-after_btn">{isKidney ? "Call the office" : "Text to book"}</span>
+        <span className="site-after_btn">{isKidney ? "Call office" : "Text to book"}</span>
       </div>
       <div className="site-after_hero">
         <div className="site-after_copy">
@@ -61,7 +61,7 @@ function BeforeSite() {
     <div className="site-before" aria-hidden="true">
       <div className="site-before_nav">
         <span>LOGO HERE</span>
-        <span>Home | About | Services | Blog | Gallery | Contact | FAQ | More ▾</span>
+        <span>Home | About | Services | Blog | Gallery | Contact</span>
       </div>
       <div className="site-before_slider">
         <div className="site-before_spinner" />
@@ -75,7 +75,7 @@ function BeforeSite() {
         <b>Subscribe to our newsletter!</b>
         <span>No thanks ✕</span>
       </div>
-      <div className="site-before_cookie">This site uses cookies. ACCEPT · SETTINGS · PREFERENCES</div>
+      <div className="site-before_cookie">This site uses cookies. ACCEPT · SETTINGS</div>
       <div className="site-before_score">PageSpeed 31</div>
     </div>
   );
@@ -83,6 +83,7 @@ function BeforeSite() {
 
 function Visualizer({ c }: { c: CaseStudy }) {
   const [pos, setPos] = useState(58);
+  const [showPhoto, setShowPhoto] = useState(false);
   const frame = useRef<HTMLDivElement>(null);
 
   const tilt = (e: React.PointerEvent) => {
@@ -99,38 +100,88 @@ function Visualizer({ c }: { c: CaseStudy }) {
 
   return (
     <div className="work_visualizer" onPointerMove={tilt} onPointerLeave={reset}>
+      <div className="work_visualizer-toggles">
+        <button
+          type="button"
+          className={`work_view-btn ${!showPhoto ? "is-active" : ""}`}
+          onClick={() => setShowPhoto(false)}
+        >
+          Interactive Code Split
+        </button>
+        <button
+          type="button"
+          className={`work_view-btn ${showPhoto ? "is-active" : ""}`}
+          onClick={() => setShowPhoto(true)}
+        >
+          Field Photography Proof
+        </button>
+      </div>
+
       <div ref={frame} className="work_browser">
         <div className="work_browser-bar">
           <span className="work_browser-dots">
             <i /> <i /> <i />
           </span>
-          <span className="work_browser-url">{c.client.toLowerCase().replace(/[^a-z]+/g, "")}.com</span>
-          <span className="work_browser-score">● 100</span>
+          <span className="work_browser-url">
+            {c.client.toLowerCase().replace(/[^a-z]+/g, "")}.com
+          </span>
+          <span className="work_browser-score">● 100/100</span>
         </div>
-        <div className="work_browser-stage" style={{ "--pos": `${pos}%` } as CSSProperties}>
-          <AfterSite c={c} />
-          <div className="work_before-layer">
-            <BeforeSite />
+
+        {showPhoto ? (
+          <div className="work_photo-stage">
+            <img
+              src={c.img}
+              alt={`${c.client} facility and operations`}
+              className="work_photo-img"
+              loading="lazy"
+            />
+            <div className="work_photo-overlay" />
+            <div className="work_photo-badge">
+              <span className="text-style-eyebrow">{c.place}</span>
+              <span className="work_photo-pill">100 PageSpeed</span>
+            </div>
+            {/* Crate tag sticker */}
+            <div className="work_crate-sticker" aria-hidden="true">
+              <div className="work_crate-top">
+                <span>CRATE</span>
+                <span>Nº {c.index}</span>
+              </div>
+              <div className="work_crate-title">{c.client}</div>
+              <div className="work_crate-sub">Grown {c.year} · Central Valley</div>
+            </div>
           </div>
-          <div className="work_handle" aria-hidden="true">
-            <span>⟷</span>
+        ) : (
+          <div className="work_browser-stage" style={{ "--pos": `${pos}%` } as CSSProperties}>
+            <AfterSite c={c} />
+            <div className="work_before-layer">
+              <BeforeSite />
+            </div>
+            <div className="work_handle" aria-hidden="true">
+              <span>⟷</span>
+            </div>
+            <span className="work_tag is-before text-style-eyebrow">Typical template</span>
+            <span className="work_tag is-after text-style-eyebrow">What we shipped</span>
+            <input
+              className="work_range"
+              type="range"
+              min={0}
+              max={100}
+              value={pos}
+              onChange={(e) => setPos(Number(e.target.value))}
+              aria-label="Drag to compare a typical template with the finished site"
+              data-cursor="label"
+              data-cursor-label="Drag"
+            />
           </div>
-          <span className="work_tag is-before text-style-eyebrow">Typical template</span>
-          <span className="work_tag is-after text-style-eyebrow">What we shipped</span>
-          <input
-            className="work_range"
-            type="range"
-            min={0}
-            max={100}
-            value={pos}
-            onChange={(e) => setPos(Number(e.target.value))}
-            aria-label="Drag to compare a typical template with the finished site"
-            data-cursor="label"
-            data-cursor-label="Drag"
-          />
-        </div>
+        )}
       </div>
-      <p className="work_note text-size-small text-color-muted">“Before” is an illustration of a typical slow template, not the client’s old site.</p>
+
+      <p className="work_note text-size-small text-color-muted">
+        {showPhoto
+          ? `Real field photograph from ${c.client} in ${c.place}.`
+          : "Drag slider to compare a typical bloated agency template against the hand-coded site."}
+      </p>
     </div>
   );
 }
@@ -149,11 +200,11 @@ export function Work() {
             label="Selected work"
             headingId="work-heading"
             heading={["Two practices.", <>Both live. Both <span className="text-italic-serif text-color-accent">100.</span></>]}
-            lede={<p>Not a gallery of mockups — real Central Valley businesses with real commercial outcomes. Open either on your phone and time it yourself.</p>}
+            lede={<p>Not a gallery of Figma mockups — real Central Valley businesses with real commercial outcomes. Open either on your phone out in the parking lot and time it yourself.</p>}
           />
 
           <div className="work_tabs" role="tablist" aria-label="Case studies">
-            {[...cases.map((x) => ({ id: x.id, index: x.index, label: x.client })), { id: "yours", index: "03", label: "Yours?" }].map((t, i) => (
+            {[...cases.map((x) => ({ id: x.id, index: x.index, label: x.client })), { id: "yours", index: "03", label: "Reserved for you" }].map((t, i) => (
               <button
                 key={t.id}
                 role="tab"
@@ -170,17 +221,46 @@ export function Work() {
 
           <div id="work-panel" role="tabpanel" key={isYours ? "yours" : c.id} className="work_component">
             {isYours ? (
-              <div className="work_yours">
-                <span className="text-style-eyebrow">Record № 03 — reserved</span>
-                <h3 className="heading-style-h2">
-                  This space is for <span className="text-italic-serif text-color-accent">your</span> trade.
-                </h3>
-                <p className="text-size-large text-color-muted max-width-medium">
-                  The $500 launch price is held for the first five Central Valley businesses. Tell me what you do, who you do it for, and where — that’s most of the brief.
-                </p>
-                <div className="button-group">
-                  <Button label="Claim a slot by text" href={studio.smsHref} variant="accent" magnetic />
-                  <Button label="See fees" href="#fees" variant="ghost" showIcon={false} />
+              <div className="work_yours-spread">
+                <div className="work_yours-visual">
+                  <div className="work_yours-image-wrap">
+                    <img
+                      src="./images/seedling.jpg"
+                      alt="A seedling sprouting in a terracotta pot on a sunny windowsill"
+                      className="work_yours-image"
+                      loading="lazy"
+                    />
+                    <div className="work_crate-sticker is-yours" aria-hidden="true">
+                      <div className="work_crate-top">
+                        <span>CRATE</span>
+                        <span>Nº 03</span>
+                      </div>
+                      <div className="work_crate-title">Reserved Spot</div>
+                      <div className="work_crate-sub">Central Valley · Launch Rate</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="work_yours-content">
+                  <span className="text-style-eyebrow text-color-accent">Crate № 03 — reserved</span>
+                  <h3 className="heading-style-h2">
+                    This spot is for <span className="text-italic-serif text-color-accent">your</span> trade.
+                  </h3>
+                  <p className="text-size-large text-color-muted">
+                    The $500 launch price is held for the first five Central Valley businesses. After that, it’s $750 — still honest, just less of a steal.
+                  </p>
+                  <p className="text-color-muted">
+                    Tell me what you do, who calls you, and where your trucks drive. You get my cell number, and I build the site myself.
+                  </p>
+                  <div className="button-group">
+                    <Button
+                      label="Claim a slot by text"
+                      href={`${studio.smsHref}?&body=${encodeURIComponent("Hi Adam — I want to claim one of the $500 launch spots for my business.")}`}
+                      variant="accent"
+                      magnetic
+                    />
+                    <Button label="See pricing breakdown" href="#fees" variant="ghost" showIcon={false} />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -193,36 +273,43 @@ export function Work() {
                     <span>{c.year}</span>
                   </div>
                   <h3 className="heading-style-h3">{c.headline}</h3>
-                  <div className="work_brief">
-                    <div>
-                      <h4 className="text-style-eyebrow text-color-accent-strong">The problem</h4>
-                      <p>{c.complaint}</p>
+
+                  <div className="work_brief-boxes">
+                    <div className="work_brief-box is-weeds">
+                      <h4 className="text-style-eyebrow text-color-accent">The weeds</h4>
+                      <p className="text-size-small">{c.complaint}</p>
                     </div>
-                    <div>
-                      <h4 className="text-style-eyebrow text-color-accent-strong">What we built</h4>
+                    <div className="work_brief-box is-planted">
+                      <h4 className="text-style-eyebrow text-color-brand-soft">What we planted</h4>
                       <ol className="work_rx" role="list">
                         {c.prescription.map((p, i) => (
                           <li key={p}>
                             <span className="text-style-eyebrow">0{i + 1}</span>
-                            {p}
+                            <span>{p}</span>
                           </li>
                         ))}
                       </ol>
                     </div>
                   </div>
-                  <dl className="work_stats">
-                    {c.stats.map((s) => (
-                      <div key={s.label}>
-                        <dd>{s.value}</dd>
-                        <dt>{s.label}</dt>
-                      </div>
-                    ))}
-                  </dl>
+
+                  <div>
+                    <h4 className="text-style-eyebrow text-color-muted">What grew</h4>
+                    <dl className="work_stats">
+                      {c.stats.map((s) => (
+                        <div key={s.label}>
+                          <dd>{s.value}</dd>
+                          <dt>{s.label}</dt>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+
                   <ul className="work_stack" role="list">
                     {c.stack.map((s) => (
                       <li key={s}>{s}</li>
                     ))}
                   </ul>
+
                   <blockquote className="work_quote">
                     <p>“{c.quote}”</p>
                     <cite>— {c.quoteBy}</cite>

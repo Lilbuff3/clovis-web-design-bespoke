@@ -6,12 +6,8 @@ import { SectionHeader } from "./primitives";
 type Network = "wifi" | "field";
 const NET = {
   wifi: { label: "Office Wi-Fi", factor: 1 },
-  field: { label: "Two bars of signal", factor: 1.7 },
+  field: { label: "Two bars of signal (LTE)", factor: 1.7 },
 };
-
-// Template milestones (seconds on wifi)
-const T = { nav: 1.4, banner: 2.2, hero: 3.0, text: 3.9, cta: 4.8, chat: 5.4 };
-const H = { paint: 0.35, lcp: 0.62 };
 
 function Metric({ m, run, i }: { m: (typeof metrics)[number]; run: boolean; i: number }) {
   const v = useCountUp(m.value, run, 1600 + i * 200, m.decimals);
@@ -28,49 +24,152 @@ function Metric({ m, run, i }: { m: (typeof metrics)[number]; run: boolean; i: n
   );
 }
 
+function MockPhoneStatus() {
+  return (
+    <div className="mock_statusbar">
+      <span>9:41</span>
+      <span className="mock_statusbar-signal">
+        <span className="mock_bar is-active" />
+        <span className="mock_bar is-active" />
+        <span className="mock_bar" />
+        <span className="mock_bar" />
+        <span className="mock_lte">LTE</span>
+      </span>
+    </div>
+  );
+}
+
 function MockSite({ variant, t, factor }: { variant: "template" | "handbuilt"; t: number; factor: number }) {
   const at = (s: number) => t >= s * (variant === "template" ? factor : Math.min(factor, 1.25));
+
   if (variant === "handbuilt") {
-    const painted = at(H.paint);
+    const loaded = at(0.25);
+    const headline = at(0.45);
+    const buttons = at(0.7);
+    const tapped = at(1.3);
+
     return (
-      <div className={`mock_site is-handbuilt ${painted ? "is-painted" : ""}`}>
-        <div className="mock_nav">
-          <span className="mock_logo">Sierra Roofing</span>
-          <span className="mock_call">Call</span>
-        </div>
-        <div className="mock_hero-img is-good" />
-        <div className="mock_h">Roof leaking? We’re out today.</div>
-        <div className="mock_p" />
-        <div className="mock_p is-short" />
-        <div className="mock_cta">Text us — (559) 555-0144</div>
-        <div className="mock_row">
-          <span>Fresno</span>
-          <span>Clovis</span>
-          <span>Madera</span>
-        </div>
+      <div className={`mock_site is-handbuilt ${loaded ? "is-painted" : ""}`}>
+        <MockPhoneStatus />
+        <div className="mock_urlbar">olsenroofing.com</div>
+
+        {loaded && (
+          <div className="mock_hb_body">
+            <div className="mock_hb_nav">
+              <span className="mock_hb_logo">Olsen Roofing</span>
+              <span className="mock_hb_badge">Clovis, CA</span>
+            </div>
+
+            {headline && (
+              <div className="mock_hb_hero">
+                <h4 className="mock_hb_h">
+                  Roof leaking? <span className="mock_hb_accent">We’re 10 min away.</span>
+                </h4>
+                <p className="mock_hb_sub">
+                  Family-owned. Same-day free estimates across Clovis &amp; Fresno. Se habla español.
+                </p>
+              </div>
+            )}
+
+            {buttons && (
+              <div className="mock_hb_actions">
+                <div className={`mock_hb_btn is-call ${tapped ? "is-tapped" : ""}`}>
+                  📞 Call now — free estimate
+                </div>
+                <div className="mock_hb_btn is-text">
+                  💬 Or send a text
+                </div>
+                <div className="mock_hb_chips">
+                  <span>★ 4.9</span>
+                  <span>24/7</span>
+                  <span>Licensed</span>
+                </div>
+              </div>
+            )}
+
+            {tapped && (
+              <div className="mock_hb_success" role="status">
+                <span className="mock_hb_success-time">1.3s · customer</span>
+                <span className="mock_hb_success-text">Tapped “Call now.” ✓</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   }
+
+  // Template / Slow site
+  const skeleton = at(1.6);
+  const cookieBanner = at(2.2);
+  const header = at(2.7);
+  const banner = at(3.3);
+  const left = at(4.0);
+  const done = at(6.8);
+
   return (
     <div className="mock_site is-template">
-      {!at(T.nav) && <div className="mock_spinner" aria-hidden="true" />}
-      {at(T.nav) && (
-        <div className="mock_nav is-bloated">
-          <span className="mock_logo">SIERRA ROOFING™</span>
-          <span className="mock_burger">≡</span>
+      <MockPhoneStatus />
+      <div className="mock_urlbar">olsenroofing-template.biz</div>
+
+      {!skeleton && (
+        <div className="mock_spinner_wrap">
+          <div className="mock_spinner" aria-hidden="true" />
         </div>
       )}
-      {at(T.banner) && <div className="mock_banner">We use cookies to improve… <b>Accept all</b></div>}
-      {at(T.hero) && <div className="mock_hero-img is-slow" />}
-      {at(T.text) && (
-        <>
-          <div className="mock_h is-template">Welcome to Our Website!</div>
-          <div className="mock_p" />
-          <div className="mock_p is-short" />
-        </>
+
+      {skeleton && (
+        <div className="mock_tpl_body">
+          {banner && (
+            <div className="mock_tpl_sale">
+              🎉 SPRING SALE! Subscribe to newsletter!!
+            </div>
+          )}
+
+          {header ? (
+            <div className="mock_nav is-bloated">
+              <span className="mock_logo">SIERRA ROOFING™</span>
+              <span className="mock_burger">≡</span>
+            </div>
+          ) : (
+            <div className="mock_skeleton mock_skeleton-nav" />
+          )}
+
+          <div className={`mock_tpl_hero ${done ? "is-done" : "mock_skeleton"}`}>
+            {done ? <div className="mock_tpl_hero-title">Welcome to Our Website!</div> : null}
+          </div>
+
+          <div className="mock_skeleton mock_skeleton-p" />
+          <div className="mock_skeleton mock_skeleton-p is-short" />
+          <div className="mock_skeleton mock_skeleton-box" />
+        </div>
       )}
-      {at(T.cta) && <div className="mock_cta is-template">Request a Quote</div>}
-      {at(T.chat) && <div className="mock_chat">Hi! 👋 Need help?</div>}
+
+      {banner && !left && (
+        <div className="mock_tpl_jump">
+          layout jumped ↕
+        </div>
+      )}
+
+      {cookieBanner && !left && (
+        <div className="mock_tpl_cookie">
+          <span>We use cookies 🍪 to improve your experience.</span>
+          <div className="mock_tpl_cookie-actions">
+            <span>Accept all</span>
+            <span>Settings</span>
+          </div>
+        </div>
+      )}
+
+      {left && (
+        <div className="mock_tpl_left" role="alert">
+          <div className="mock_tpl_left-emoji">🚶</div>
+          <div className="mock_tpl_left-title">They left.</div>
+          <div className="mock_tpl_left-timing">Gave up at {(4.0 * factor).toFixed(1)}s</div>
+          <div className="mock_tpl_left-desc">…and called the next roofer on the list.</div>
+          {done && <div className="mock_tpl_left-done">page finally loaded · {(6.8 * factor).toFixed(1)}s</div>}
+        </div>
+      )}
     </div>
   );
 }
@@ -83,7 +182,7 @@ export function Proof() {
   const [network, setNetwork] = useState<Network>("field");
   const raf = useRef(0);
   const factor = NET[network].factor;
-  const end = T.chat * factor + 0.6;
+  const end = 7.2 * factor;
 
   const run = useCallback(() => {
     cancelAnimationFrame(raf.current);
@@ -109,11 +208,13 @@ export function Proof() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stageInView, network]);
 
-  const tplLcp = T.cta * factor;
-  const hbLcp = H.lcp * Math.min(factor, 1.25);
+  const tplLcp = 4.8 * factor;
+  const hbLcp = 0.62 * Math.min(factor, 1.25);
   const tplDone = t >= tplLcp;
   const hbDone = t >= hbLcp;
-  const cls = t >= T.hero * factor ? (t >= T.cta * factor ? 0.34 : 0.21) : t >= T.banner * factor ? 0.08 : 0;
+  const cls = t >= 3.0 * factor ? (t >= 4.8 * factor ? 0.34 : 0.21) : t >= 2.2 * factor ? 0.08 : 0;
+  const bailThreshold = 4.0 * factor;
+  const pctOfTimeline = Math.min(1, t / end);
 
   return (
     <section className="section_proof" aria-labelledby="proof-heading">
@@ -125,7 +226,7 @@ export function Proof() {
             label="The load race"
             headingId="proof-heading"
             heading={["Speed isn’t a", <><span className="text-italic-serif text-color-highlight">feature.</span> It’s the</>, "front door."]}
-            lede={<p>Same business, same content, same phone. One built on a typical template, one built by hand. Pick a signal and watch who gets the phone call.</p>}
+            lede={<p>Same roofer, same trade, same phone with two bars of signal. One built on a typical bloated agency template, one hand-grown in Clovis. Pick a signal and watch who gets the customer.</p>}
           />
 
           <div ref={stageRef} className="proof_stage">
@@ -148,23 +249,52 @@ export function Proof() {
                 <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
                   <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" />
                 </svg>
-                {running ? "Racing…" : "Run it again"}
+                {running ? "Racing…" : "Run the race again"}
               </button>
+            </div>
+
+            {/* Live race timeline bar with 4s bailout threshold */}
+            <div className="proof_timeline" aria-hidden="true">
+              <div className="proof_timeline-track">
+                <div
+                  className="proof_timeline-fill"
+                  style={{ width: `${pctOfTimeline * 100}%` }}
+                />
+                <div
+                  className="proof_timeline-threshold"
+                  style={{ left: `${(bailThreshold / end) * 100}%` }}
+                />
+              </div>
+              <div className="proof_timeline-labels text-style-eyebrow">
+                <span>0s</span>
+                <span
+                  className="proof_timeline-marker"
+                  style={{ left: `${(bailThreshold / end) * 100}%` }}
+                >
+                  ↑ {bailThreshold.toFixed(1)}s: patience expires (visitor leaves)
+                </span>
+                <span>{end.toFixed(1)}s</span>
+              </div>
             </div>
 
             <div className="proof_lanes">
               {(["template", "handbuilt"] as const).map((v) => {
-                const done = v === "template" ? tplDone : hbDone;
-                const lcp = v === "template" ? tplLcp : hbLcp;
+                const isHandbuilt = v === "handbuilt";
+                const done = isHandbuilt ? hbDone : tplDone;
+                const lcp = isHandbuilt ? hbLcp : tplLcp;
                 const shown = done ? lcp : Math.min(t, lcp);
+
                 return (
                   <div key={v} className={`proof_lane is-${v}`}>
                     <div className="proof_lane-head">
-                      <span className="text-style-eyebrow">{v === "template" ? "Typical template" : "Hand-built · Clovis"}</span>
+                      <span className="text-style-eyebrow">
+                        {isHandbuilt ? "Hand-built · Clovis Web Design" : "Typical template · Heavy plugins"}
+                      </span>
                       <span className={`proof_timer ${done ? "is-done" : ""}`} aria-live="off">
                         {shown.toFixed(2)}s
                       </span>
                     </div>
+
                     <div className="proof_phone">
                       <div className="proof_phone-notch" />
                       <div className="proof_phone-screen">
@@ -177,6 +307,7 @@ export function Proof() {
                         />
                       </div>
                     </div>
+
                     <dl className="proof_readout">
                       <div>
                         <dt>LCP</dt>
@@ -184,19 +315,19 @@ export function Proof() {
                       </div>
                       <div>
                         <dt>Layout shift</dt>
-                        <dd>{v === "template" ? cls.toFixed(2) : "0.00"}</dd>
+                        <dd>{!isHandbuilt ? cls.toFixed(2) : "0.00"}</dd>
                       </div>
                       <div>
-                        <dt>Visitor</dt>
-                        <dd className={v === "handbuilt" && hbDone ? "is-good" : v === "template" && t > 3 * factor && !tplDone ? "is-bad" : ""}>
-                          {v === "handbuilt"
+                        <dt>Customer outcome</dt>
+                        <dd className={isHandbuilt && hbDone ? "is-good" : !isHandbuilt && t > bailThreshold ? "is-bad" : ""}>
+                          {isHandbuilt
                             ? hbDone
-                              ? "Calling you"
-                              : "Waiting…"
+                              ? "Tapped 'Call now'"
+                              : "Loading…"
                             : tplDone
                               ? "Already left"
-                              : t > 3 * factor
-                                ? "Giving up…"
+                              : t > bailThreshold
+                                ? "Gave up & left"
                                 : "Waiting…"}
                         </dd>
                       </div>
@@ -206,7 +337,7 @@ export function Proof() {
               })}
             </div>
             <p className="proof_footnote text-size-small">
-              Illustrative simulation of a typical plugin-heavy template versus our build standards. Not a recording of any specific site.
+              Simulation calibrated to mid-range mobile hardware on real cellular signal. Google’s data shows over 53% of mobile visits are abandoned if a page takes longer than 3 seconds to load.
             </p>
           </div>
 

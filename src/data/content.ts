@@ -93,6 +93,7 @@ export type CaseStudy = {
   sector: string;
   place: string;
   year: string;
+  img: string;
   headline: string;
   complaint: string;
   prescription: string[];
@@ -103,6 +104,12 @@ export type CaseStudy = {
   quoteBy: string;
 };
 
+export const orchardQuote = {
+  quote: "You don’t rent the tree from me. You own the orchard.",
+  author: "Adam Youssef",
+  role: "Builder · Clovis, CA",
+};
+
 export const cases: CaseStudy[] = [
   {
     id: "kidney",
@@ -111,6 +118,7 @@ export const cases: CaseStudy[] = [
     sector: "Nephrology practice",
     place: "Madera & Fresno, CA",
     year: "2025",
+    img: "./images/kidney.jpg",
     headline: "A medical site that never touches patient data — and scores 100 on Google’s speed test.",
     complaint: "The old forms asked patients for health details a website had no business holding.",
     prescription: ["No patient data on the web", "Printable forms instead of online ones", "Guides patients actually use"],
@@ -131,6 +139,7 @@ export const cases: CaseStudy[] = [
     sector: "Roll-off dumpster rental",
     place: "Fresno & Clovis, CA",
     year: "2025",
+    img: "./images/bigbros.jpg",
     headline: "Number one on Google for dumpster rental in Fresno — ahead of the national brokers.",
     complaint: "National brokers were outranking the company that actually owns the trucks.",
     prescription: ["A page per service area", "Flat prices, right on the page", "Driveway protection, said out loud"],
@@ -282,6 +291,10 @@ export const faqs = [
   {
     q: "We’re a medical practice. How do you handle patient privacy?",
     a: "By not collecting patient information on the website at all. The site routes people to a phone call or referral fax — channels your practice already handles correctly. Nothing sensitive is stored on the web server, because nothing sensitive is collected there.",
+  },
+  {
+    q: "Can we keep our existing booking or ordering system?",
+    a: "Usually, yes. If it gives you a link or an embed — most do — I can put it on the page without slowing things down. Tell me what software you run and I'll confirm before you pay anything.",
   },
   {
     q: "What happens if something breaks after launch?",
