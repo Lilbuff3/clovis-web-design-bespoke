@@ -46,10 +46,10 @@ function AfterSite({ c }: { c: CaseStudy }) {
       <div className="site-after_hero">
         <div className="site-after_copy">
           <span className="site-after_eyebrow">
-            {isKidney ? "Nephrology & Internal Medicine · Madera & Fresno" : "Fresno Roll-Off Dumpster Rental"}
+            {isKidney ? "Nephrology & Internal Medicine · Madera & Fresno, CA" : "Fresno Roll-Off Dumpster Rental · Se habla español"}
           </span>
           <div className="site-after_h">
-            {isKidney ? "Expert Kidney Care for the Valley." : "Clear space. Clear mind."}
+            {isKidney ? "Expert Kidney Care for the Central Valley." : "Clear space. Clear mind."}
           </div>
           <p className="site-after_p-text">
             {isKidney
@@ -219,7 +219,7 @@ function Visualizer({ c }: { c: CaseStudy }) {
           className={`work_view-btn ${viewMode === "split" ? "is-active" : ""}`}
           onClick={() => setViewMode("split")}
         >
-          Interactive Code Split
+          Before & After Split
         </button>
         <button
           type="button"
@@ -291,14 +291,6 @@ function Visualizer({ c }: { c: CaseStudy }) {
             <div className="work_photo-badge">
               <span className="text-style-eyebrow">{c.place}</span>
               <span className="work_photo-pill">100 PageSpeed</span>
-            </div>
-            <div className="work_crate-sticker" aria-hidden="true">
-              <div className="work_crate-top">
-                <span>CRATE</span>
-                <span>Nº {c.index}</span>
-              </div>
-              <div className="work_crate-title">{c.client}</div>
-              <div className="work_crate-sub">Production Site · Clovis CA</div>
             </div>
           </div>
         ) : viewMode === "field" ? (
