@@ -140,18 +140,49 @@
 .boost_control-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 1rem;
 }
 .boost_control-label {
   font-weight: 600;
   font-size: 0.95rem;
 }
+.boost_stepper-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.boost_step-btn {
+  width: 1.65rem;
+  height: 1.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--_color---border);
+  background: var(--_color---surface-sunk);
+  color: var(--_color---text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 180ms var(--_ease---out-expo);
+  user-select: none;
+}
+.boost_step-btn:hover {
+  background: var(--_color---surface);
+  border-color: var(--_color---border-strong);
+  transform: scale(1.1);
+}
+.boost_step-btn:active {
+  transform: scale(0.92);
+}
 .boost_control-value {
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--_color---text-primary);
 }
+.boost_control-value.is-optimal,
 .boost_control-value.is-good {
   color: #1b7a43;
 }
@@ -225,9 +256,14 @@
   background: var(--_color---surface-sunk);
   transition: all 300ms var(--_ease---out-expo);
 }
+.boost_status-box.is-optimal,
 .boost_status-box.is-good {
   background: rgba(46, 125, 50, 0.08);
   border-color: rgba(46, 125, 50, 0.3);
+}
+.boost_status-box.is-optimal {
+  background: rgba(46, 125, 50, 0.12);
+  border-color: rgba(46, 125, 50, 0.45);
 }
 .boost_status-box.is-moderate {
   background: rgba(244, 178, 62, 0.12);
@@ -242,6 +278,7 @@
   font-size: 0.92rem;
   margin-bottom: 0.25rem;
 }
+.boost_status-box.is-optimal .boost_status-title,
 .boost_status-box.is-good .boost_status-title { color: #1b7a43; }
 .boost_status-box.is-moderate .boost_status-title { color: #a45300; }
 .boost_status-box.is-critical .boost_status-title { color: #b23e19; }
@@ -263,6 +300,9 @@
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
 }
+.boost_loss-block.is-optimal {
+  border-bottom-color: rgba(244, 237, 225, 0.25);
+}
 .boost_loss-amount {
   font-family: var(--_font---display);
   font-size: clamp(2.4rem, 4vw, 3.8rem);
@@ -271,6 +311,9 @@
   letter-spacing: -0.03em;
   margin-block: 0.35rem 0.2rem;
   font-variation-settings: "opsz" 90, "wght" 600;
+}
+.boost_loss-amount.is-zero {
+  color: var(--_color---highlight);
 }
 .boost_loss-period {
   font-family: var(--_font---body);
@@ -523,6 +566,50 @@
   width: 100%;
   justify-content: center;
 }
+.boost_copy-btn {
+  background: transparent;
+  border: 1px dashed var(--_color---border-strong);
+  border-radius: var(--_radius---s);
+  padding: 0.65rem 1rem;
+  color: var(--_color---text-muted);
+  cursor: pointer;
+  font-size: 0.76rem;
+  text-align: center;
+  transition: all 200ms;
+}
+.boost_copy-btn:hover {
+  background: var(--_color---surface-sunk);
+  color: var(--_color---text-primary);
+  border-color: var(--_color---text-primary);
+}
+
+/* Standalone route callout on homepage */
+.boost_standalone-callout {
+  margin-top: var(--_space---gap-xl);
+  padding: 1.5rem 2rem;
+  border-radius: var(--_radius---m);
+  background: var(--_color---surface-sunk);
+  border: 1px dashed var(--_color---border-strong);
+}
+.boost_standalone-callout-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+.boost_standalone-callout-text {
+  max-width: 36rem;
+}
+.boost_standalone-callout-text code {
+  font-family: var(--_font---mono);
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+.boost_standalone-btn {
+  white-space: nowrap;
+}
 
 /* ---------- CHAPTER RAIL (FLOATING RIGHT NAVIGATION) ---------- */
 .chapter-rail {
@@ -625,19 +712,25 @@
 .is-boost-page .section_boost {
   padding-top: 0;
 }
+.navbar_component.is-boost-header {
+  padding-top: 0;
+}
 .boost-page_banner {
   background: var(--_color---brand);
   color: var(--_color---text-on-brand);
-  padding-block: 0.5rem;
-  position: relative;
-  z-index: 75;
-  border-bottom: 1px solid rgba(244, 237, 225, 0.15);
+  padding-block: 0.45rem;
+  border-bottom: 1px solid rgba(244, 237, 225, 0.12);
 }
 .boost-page_banner-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+@media (max-width: 640px) {
+  .boost-banner_badge {
+    display: none;
+  }
 }
 .boost-back-btn {
   background: transparent;
@@ -813,4 +906,79 @@
   border: 1px solid var(--_color---border);
   border-radius: var(--_radius---m);
   padding: 1.5rem;
+}
+
+/* ---------- BOOST CLOSING SECTION ---------- */
+.section_boost-closing {
+  padding-bottom: var(--_space---section-large);
+  background: var(--_color---background);
+}
+.boost_closing-card {
+  background: var(--_color---surface);
+  border: 1px solid var(--_color---border);
+  border-radius: var(--_radius---l);
+  padding: clamp(2rem, 5vw, 4.5rem);
+  box-shadow: 0 25px 60px -20px rgba(30, 26, 22, 0.12);
+  text-align: center;
+}
+.boost_closing-inner {
+  max-width: 48rem;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.boost_closing-scarcity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: rgba(228, 87, 46, 0.1);
+  color: var(--_color---accent-text);
+  border-radius: var(--_radius---pill);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.boost_closing-heading {
+  margin-bottom: 0.25rem;
+}
+.boost_closing-lede {
+  line-height: 1.5;
+  max-width: 42rem;
+}
+.boost_closing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.boost_closing-phone {
+  display: block;
+  width: 100%;
+  color: var(--_color---text-muted);
+  text-decoration: none;
+  font-size: 0.82rem;
+  margin-top: 0.25rem;
+}
+.boost_closing-phone:hover {
+  color: var(--_color---accent-text);
+}
+.boost_closing-guarantees {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--_color---border);
+  width: 100%;
+}
+.boost_guar-pill {
+  font-size: 0.8rem;
+  font-family: var(--_font---mono);
+  color: var(--_color---text-muted);
 }

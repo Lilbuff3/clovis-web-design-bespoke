@@ -2,21 +2,30 @@ import { useEffect, useState } from "react";
 import { studio } from "../data/content";
 import { buildSmsHref } from "../utils/sms";
 
-export function MobileTextBar() {
+export function MobileTextBar({
+  smsMessage = "Hi Adam — saw your site, wanted to ask about a website for my business.",
+}: {
+  smsMessage?: string;
+} = {}) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    // Hide bar when user reaches the contact section or footer to prevent overlap
+    // Hide bar when user reaches the contact section, boost closing, or footer to prevent overlap
     const contactEl = document.getElementById("contact");
+    const closingEl = document.getElementById("boost-closing");
     const footerEl = document.querySelector(".footer_component");
 
-    if (!contactEl && !footerEl) return;
+    if (!contactEl && !closingEl && !footerEl) return;
 
     if (typeof IntersectionObserver === "undefined") {
       const onScroll = () => {
         const contactTop = contactEl?.getBoundingClientRect().top ?? Infinity;
+        const closingTop = closingEl?.getBoundingClientRect().top ?? Infinity;
         const footerTop = footerEl?.getBoundingClientRect().top ?? Infinity;
-        const isNearBottom = contactTop < window.innerHeight || footerTop < window.innerHeight;
+        const isNearBottom =
+          contactTop < window.innerHeight ||
+          closingTop < window.innerHeight ||
+          footerTop < window.innerHeight;
         setVisible(!isNearBottom);
       };
       window.addEventListener("scroll", onScroll, { passive: true });
@@ -32,6 +41,7 @@ export function MobileTextBar() {
     );
 
     if (contactEl) observer.observe(contactEl);
+    if (closingEl) observer.observe(closingEl);
     if (footerEl) observer.observe(footerEl);
 
     return () => observer.disconnect();
@@ -44,7 +54,7 @@ export function MobileTextBar() {
     >
       <div className="mobile_text_bar-inner">
         <a
-          href={buildSmsHref(studio.smsHref, "Hi Adam — saw your site, wanted to ask about a website for my business.")}
+          href={buildSmsHref(studio.smsHref, smsMessage)}
           className="mobile_text_bar-sms"
           aria-label={`Text Adam at ${studio.phoneDisplay}`}
         >

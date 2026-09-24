@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-interface Chapter {
+export interface Chapter {
   id: string;
   num: string;
   name: string;
 }
 
-const CHAPTERS: Chapter[] = [
+export const HOME_CHAPTERS: Chapter[] = [
   { id: "top", num: "00", name: "Studio" },
   { id: "proof", num: "01", name: "The Race" },
   { id: "work", num: "02", name: "Real Proof" },
@@ -18,35 +18,49 @@ const CHAPTERS: Chapter[] = [
   { id: "contact", num: "08", name: "Direct Cell" },
 ];
 
-export function ChapterRail() {
-  const [activeId, setActiveId] = useState<string>("top");
+export const BOOST_CHAPTERS: Chapter[] = [
+  { id: "boost-top", num: "00", name: "Overview" },
+  { id: "boost-calc", num: "01", name: "Loss Calc" },
+  { id: "boost-diag", num: "02", name: "5 Friction Points" },
+  { id: "boost-teardown", num: "03", name: "Free Teardown" },
+  { id: "boost-proof", num: "04", name: "Local Proof" },
+  { id: "boost-faq", num: "05", name: "Questions" },
+  { id: "boost-closing", num: "06", name: "Intake" },
+];
+
+export function ChapterRail({ chapters = HOME_CHAPTERS }: { chapters?: Chapter[] }) {
+  const [activeId, setActiveId] = useState<string>(chapters[0]?.id || "top");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     // Show rail after scrolling past initial hero fold
     const handleScroll = () => {
-      setVisible(window.scrollY > 300);
+      setVisible(window.scrollY > 240);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    // IntersectionObserver to observe sections
+    // IntersectionObserver to observe sections with proximity detection
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
+        const intersecting = entries.filter((e) => e.isIntersecting);
+        if (intersecting.length > 0) {
+          intersecting.sort(
+            (a, b) =>
+              Math.abs(a.boundingClientRect.top - window.innerHeight * 0.3) -
+              Math.abs(b.boundingClientRect.top - window.innerHeight * 0.3)
+          );
+          setActiveId(intersecting[0].target.id);
         }
       },
       {
-        rootMargin: "-25% 0px -45% 0px",
-        threshold: 0.1,
+        rootMargin: "-20% 0px -40% 0px",
+        threshold: [0.05, 0.2, 0.5],
       }
     );
 
-    CHAPTERS.forEach((ch) => {
+    chapters.forEach((ch) => {
       const el = document.getElementById(ch.id);
       if (el) observer.observe(el);
     });
@@ -55,7 +69,7 @@ export function ChapterRail() {
       window.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
-  }, []);
+  }, [chapters]);
 
   const scrollTo = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -74,7 +88,7 @@ export function ChapterRail() {
       role="navigation"
     >
       <div className="chapter-rail_inner">
-        {CHAPTERS.map((ch) => {
+        {chapters.map((ch) => {
           const isActive = activeId === ch.id;
           return (
             <a

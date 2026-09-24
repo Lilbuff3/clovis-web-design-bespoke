@@ -1,56 +1,49 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { studio, cases, faqs } from "../data/content";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileTextBar } from "./MobileTextBar";
 import { Boost } from "./Boost";
-import { Button, Reveal } from "./primitives";
+import { ChapterRail, BOOST_CHAPTERS } from "./ChapterRail";
+import { Button, Cursor, Reveal, ScrollProgress } from "./primitives";
 
-export function BoostPage({ onNavigateHome }: { onNavigateHome: () => void }) {
+export function BoostPage({ onNavigate }: { onNavigate: (path: string) => void }) {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
     document.title = "Conversion Boost™ — Clovis Web Design";
   }, []);
 
+  const currentMonthYear = useMemo(() => {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date());
+  }, []);
+
   return (
     <div className="page-wrapper is-boost-page">
-      <a href="#boost" className="skip-link">
+      <a href="#boost-calc" className="skip-link">
         Skip to Boost calculator
       </a>
 
-      {/* Boost Custom Top Navigation Bar */}
-      <div className="boost-page_banner">
-        <div className="padding-global">
-          <div className="container-large boost-page_banner-inner">
-            <button
-              type="button"
-              onClick={onNavigateHome}
-              className="boost-back-btn text-style-eyebrow"
-            >
-              ← Explore Full Studio Portfolio
-            </button>
-            <div className="boost-banner_badge text-style-eyebrow">
-              <span className="status_dot" aria-hidden="true" /> Live Conversion Engine · Clovis, CA
-            </div>
-            <a href={studio.phoneHref} className="boost-banner_phone text-style-eyebrow font-mono">
-              Direct: {studio.phoneDisplay}
-            </a>
-          </div>
-        </div>
-      </div>
+      {/* Webflow Bespoke Immersion Elements */}
+      <ScrollProgress />
+      <Cursor />
+      <ChapterRail chapters={BOOST_CHAPTERS} />
 
-      <Header isBoostPage={true} />
+      {/* Header with integrated top banner & client routing */}
+      <Header isBoostPage={true} onNavigate={onNavigate} />
 
       <main id="main" className="main-wrapper">
         {/* Boost Page Specific Hero */}
-        <section className="section_boost-hero" aria-labelledby="boost-hero-heading">
+        <section id="boost-top" className="section_boost-hero" aria-labelledby="boost-hero-heading">
           <div className="padding-global padding-section-small">
             <div className="container-large">
               <div className="boost-hero_inner">
                 <div className="boost-hero_meta text-style-eyebrow">
                   <span>Special Project · Central Valley Businesses</span>
                   <span className="status_dot" aria-hidden="true" />
-                  <span>October 2026 Intake</span>
+                  <span>{currentMonthYear} Intake</span>
                 </div>
 
                 <h1 id="boost-hero-heading" className="heading-style-display boost-hero_heading">
@@ -65,7 +58,7 @@ export function BoostPage({ onNavigateHome }: { onNavigateHome: () => void }) {
                 </p>
 
                 <div className="boost-hero_actions">
-                  <a href="#boost" className="button is-accent">
+                  <a href="#boost-calc" className="button is-accent" data-cursor="hover">
                     <span>Launch the Loss Calculator ↓</span>
                   </a>
                   <Button
@@ -76,8 +69,9 @@ export function BoostPage({ onNavigateHome }: { onNavigateHome: () => void }) {
                   />
                   <button
                     type="button"
-                    onClick={onNavigateHome}
+                    onClick={() => onNavigate("/")}
                     className="text-link boost-explore-link text-size-small"
+                    data-cursor="hover"
                   >
                     View complete studio portfolio &amp; case studies →
                   </button>
@@ -108,10 +102,10 @@ export function BoostPage({ onNavigateHome }: { onNavigateHome: () => void }) {
         </section>
 
         {/* The Standalone Boost Engine (Calculator + Teardown + 5 Pillars) */}
-        <Boost isStandalone={true} />
+        <Boost isStandalone={true} onNavigate={onNavigate} />
 
         {/* Quick Social Proof Strip from Real Central Valley Clients */}
-        <section className="section_boost-proof">
+        <section id="boost-proof" className="section_boost-proof">
           <div className="padding-global padding-section-small">
             <div className="container-large">
               <div className="boost-proof_header text-center">
@@ -157,7 +151,7 @@ export function BoostPage({ onNavigateHome }: { onNavigateHome: () => void }) {
         </section>
 
         {/* High-Intent FAQ */}
-        <section className="section_boost-faq">
+        <section id="boost-faq" className="section_boost-faq">
           <div className="padding-global padding-section-small">
             <div className="container-large">
               <div className="boost-faq_header">
@@ -176,10 +170,67 @@ export function BoostPage({ onNavigateHome }: { onNavigateHome: () => void }) {
             </div>
           </div>
         </section>
+
+        {/* High-Impact Closing Intake & Conversion Section */}
+        <section id="boost-closing" className="section_boost-closing">
+          <div className="padding-global padding-section-medium">
+            <div className="container-large">
+              <Reveal className="boost_closing-card">
+                <div className="boost_closing-inner">
+                  <div className="boost_closing-scarcity text-style-eyebrow">
+                    <span className="status_dot" aria-hidden="true" />
+                    <span>Intake Cap: Only 2 Client Spots Left for {currentMonthYear}</span>
+                  </div>
+
+                  <h2 className="heading-style-h2 boost_closing-heading">
+                    Stop leaking callers. Get a site that{" "}
+                    <span className="text-italic-serif text-color-accent">pays for itself.</span>
+                  </h2>
+
+                  <p className="text-size-large boost_closing-lede text-color-muted">
+                    $500 one-off launch build. Live in 7 days. You own the code, domain, and hosting on day one.
+                    Zero monthly hostage fees, zero lock-in, and guaranteed 100/100 PageSpeed.
+                  </p>
+
+                  <div className="boost_closing-actions">
+                    <a
+                      href={studio.smsHref}
+                      className="button is-accent"
+                      data-cursor="label"
+                      data-cursor-label="Text"
+                    >
+                      <span>Text Adam at {studio.phoneDisplay}</span>
+                    </a>
+                    <a
+                      href="#boost-teardown"
+                      className="button is-light"
+                      data-cursor="hover"
+                    >
+                      <span>Get Free 3-Min Video Teardown First ↑</span>
+                    </a>
+                    <a
+                      href={studio.phoneHref}
+                      className="boost_closing-phone text-style-eyebrow font-mono"
+                    >
+                      Or call directly: {studio.phoneDisplay}
+                    </a>
+                  </div>
+
+                  <div className="boost_closing-guarantees">
+                    <div className="boost_guar-pill">✓ 100/100 Mobile PageSpeed</div>
+                    <div className="boost_guar-pill">✓ 100% Hand-Crafted Code</div>
+                    <div className="boost_guar-pill">✓ English + Español Ready</div>
+                    <div className="boost_guar-pill">✓ Code in Your Name Day 1</div>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
-      <MobileTextBar />
+      <MobileTextBar smsMessage="Hi Adam — saw the Conversion Boost page. I'd like to check how fast my website can be built and see your schedule." />
     </div>
   );
 }

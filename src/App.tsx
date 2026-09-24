@@ -42,15 +42,24 @@ export default function App() {
 
   const navigateTo = (path: string) => {
     if (typeof window !== "undefined") {
+      const [pathname, hash] = path.split("#");
+      const targetPath = (pathname || "/").toLowerCase();
       window.history.pushState({}, "", path);
-      setCurrentPath(path);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setCurrentPath(targetPath);
+      if (hash) {
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }, 60);
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
   };
 
   // Dedicated /boost high-conversion route
   if (currentPath === "/boost" || currentPath === "/boost/") {
-    return <BoostPage onNavigateHome={() => navigateTo("/")} />;
+    return <BoostPage onNavigate={navigateTo} />;
   }
 
   return (
@@ -61,13 +70,13 @@ export default function App() {
       <ScrollProgress />
       <Cursor />
       <ChapterRail />
-      <Header />
+      <Header onNavigate={navigateTo} />
       <main id="main" className="main-wrapper">
         <Hero />
         <Manifesto />
         <Proof />
         <Work />
-        <Boost />
+        <Boost onNavigate={navigateTo} />
         <Capabilities />
         <Process />
         <Compare />

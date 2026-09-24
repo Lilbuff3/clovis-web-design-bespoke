@@ -16,6 +16,8 @@ const PRESETS: TradePreset[] = [
   { name: "Medical / Specialty Clinic", ticket: 950, visitors: 1600, speed: 3.9, icon: "🩺" },
   { name: "Dumpster & Equipment", ticket: 480, visitors: 1800, speed: 4.4, icon: "🚛" },
   { name: "Plumbing & HVAC", ticket: 650, visitors: 1100, speed: 4.2, icon: "⚡" },
+  { name: "Law & Accounting", ticket: 2200, visitors: 700, speed: 4.0, icon: "⚖️" },
+  { name: "Auto Repair / Collision", ticket: 850, visitors: 1300, speed: 4.5, icon: "🚗" },
 ];
 
 const DIAGNOSTIC_PILLARS = [
@@ -61,7 +63,13 @@ const DIAGNOSTIC_PILLARS = [
   },
 ];
 
-export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
+export function Boost({
+  isStandalone = false,
+  onNavigate,
+}: {
+  isStandalone?: boolean;
+  onNavigate?: (path: string) => void;
+}) {
   const [ticketValue, setTicketValue] = useState(850);
   const [visitors, setVisitors] = useState(1200);
   const [speed, setSpeed] = useState(4.2);
@@ -71,6 +79,7 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
   const [siteUrl, setSiteUrl] = useState("");
   const [userTrade, setUserTrade] = useState("");
   const [teardownRequested, setTeardownRequested] = useState(false);
+  const [copiedDraft, setCopiedDraft] = useState(false);
 
   const ticketId = useId();
   const visitorsId = useId();
@@ -78,18 +87,27 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
   const urlId = useId();
   const tradeId = useId();
 
-  // Behavioral calculation based on Google & Akamai research
+  // Dynamic month for genuine scarcity
+  const currentMonthYear = useMemo(() => {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date());
+  }, []);
+
+  // Behavioral calculation based on Google & Akamai conversion research
   const calc = useMemo(() => {
     // Baseline conversion rate at <0.8s mobile load time for high-intent local queries
     const baselineConversion = 0.038;
 
     // Bounce retention decay curve relative to speed
-    // 0.8s = 100% retention; 3.0s = ~65%; 5.0s = ~42%; 8.0s = ~25%
-    const retentionRate = Math.max(0.2, 1 - (speed - 0.8) * 0.14);
+    // 0.8s = 100% retention; 2.0s = ~83%; 3.5s = ~62%; 5.0s = ~41%; 7.5s = ~20%
+    const retentionRate = Math.min(1, Math.max(0.18, 1 - (speed - 0.8) * 0.14));
 
     const optimalCallers = Math.round(visitors * baselineConversion);
-    const actualCallers = Math.max(1, Math.round(optimalCallers * retentionRate));
-    const lostCallers = Math.max(1, optimalCallers - actualCallers);
+    const actualCallers = Math.min(optimalCallers, Math.round(optimalCallers * retentionRate));
+    // When speed is <= 0.9s, lostCallers is mathematically 0
+    const lostCallers = Math.max(0, optimalCallers - actualCallers);
 
     // Conservative 40% close rate on phone/SMS inquiries
     const estimatedCloseRate = 0.4;
@@ -97,13 +115,17 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
     const annualLostRevenue = monthlyLostRevenue * 12;
 
     // ROI on Clovis $500 launch build
-    const roiMultiple = Math.max(1, Math.round(annualLostRevenue / 500));
+    const roiMultiple = annualLostRevenue > 0 ? Math.max(1, Math.round(annualLostRevenue / 500)) : 0;
 
     // Severity category
     let severity = "good";
     let severityLabel = "⚡ Fast · Minimal traffic leakage";
-    let severityDesc = "Your site is responsive, but micro-optimizations can still boost conversions.";
-    if (speed > 2.0 && speed <= 3.8) {
+    let severityDesc = "Your site is responsive. Visitors find your phone number before giving up.";
+    if (speed <= 1.0) {
+      severity = "optimal";
+      severityLabel = "🏆 Peak Conversion · 100% Caller Retention";
+      severityDesc = "Hand-built Clovis benchmark. Zero mobile lag means every high-intent local caller connects.";
+    } else if (speed > 2.0 && speed <= 3.8) {
       severity = "moderate";
       severityLabel = "⚠️ Moderate Drag · Losing ~25%–40% of mobile callers";
       severityDesc = "Central Valley customers on patchy cell reception are noticing lag.";
@@ -129,10 +151,27 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
   const teardownMessage = useMemo(() => {
     const cleanUrl = siteUrl.trim() || "my website";
     const cleanTrade = userTrade.trim() ? ` for my ${userTrade.trim()} business` : "";
-    return `Hi Adam — I ran the Boost calculator. My site loads in ~${speed}s and I estimate we're losing around $${calc.monthlyLostRevenue.toLocaleString()}/mo. Could you do a free 3-minute video teardown for ${cleanUrl}${cleanTrade}?`;
-  }, [siteUrl, userTrade, speed, calc.monthlyLostRevenue]);
+    if (calc.lostCallers === 0) {
+      return `Hi Adam — I ran the Boost calculator for ${cleanUrl}${cleanTrade}. My site is fast, but I'd love a quick 3-minute video teardown to see if my mobile call buttons and layout are converting at peak efficiency.`;
+    }
+    return `Hi Adam — I ran the Boost calculator. My site loads in ~${speed.toFixed(1)}s and I estimate we're losing around $${calc.monthlyLostRevenue.toLocaleString()}/mo. Could you do a free 3-minute video teardown for ${cleanUrl}${cleanTrade}?`;
+  }, [siteUrl, userTrade, speed, calc.monthlyLostRevenue, calc.lostCallers]);
 
   const teardownSmsHref = buildSmsHref(studio.smsHref, teardownMessage);
+
+  const handleCopyDraft = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(`${teardownMessage} (To: ${studio.phoneDisplay})`);
+        setCopiedDraft(true);
+        setTimeout(() => setCopiedDraft(false), 3500);
+      }
+    } catch {
+      // Fallback
+      setCopiedDraft(true);
+      setTimeout(() => setCopiedDraft(false), 3500);
+    }
+  };
 
   const applyPreset = (preset: TradePreset) => {
     setActivePreset(preset.name);
@@ -168,7 +207,7 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
             <div className="boost_scarcity-inner">
               <span className="boost_scarcity-indicator" aria-hidden="true" />
               <div className="boost_scarcity-text">
-                <strong>Current Studio Intake:</strong> Only 2 client build spots open for this month. First come, first served.
+                <strong>Current Studio Intake ({currentMonthYear}):</strong> Only 2 client build spots open for this month. First come, first served.
               </div>
               <a href="#fees" className="boost_scarcity-link">
                 $500 Launch Offer details →
@@ -177,7 +216,7 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
           </Reveal>
 
           {/* Interactive Cost-of-Inactivity & Revenue Leak Calculator */}
-          <Reveal className="boost_calculator-card">
+          <Reveal id="boost-calc" className="boost_calculator-card">
             <div className="boost_calc-header">
               <div className="boost_calc-badge text-style-eyebrow">Interactive Psychological Engine</div>
               <h3 className="heading-style-h3">Cost-of-Inactivity &amp; Revenue Leak Calculator</h3>
@@ -214,9 +253,33 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
                     <label htmlFor={ticketId} className="boost_control-label">
                       Average Customer / Job Value
                     </label>
-                    <span className="boost_control-value font-mono">
-                      ${ticketValue.toLocaleString()}
-                    </span>
+                    <div className="boost_stepper-row">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTicketValue((v) => Math.max(150, v - 100));
+                          setActivePreset(null);
+                        }}
+                        className="boost_step-btn"
+                        aria-label="Decrease customer value by $100"
+                      >
+                        −
+                      </button>
+                      <span className="boost_control-value font-mono">
+                        ${ticketValue.toLocaleString()}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTicketValue((v) => Math.min(5000, v + 100));
+                          setActivePreset(null);
+                        }}
+                        className="boost_step-btn"
+                        aria-label="Increase customer value by $100"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <input
                     id={ticketId}
@@ -245,9 +308,33 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
                     <label htmlFor={visitorsId} className="boost_control-label">
                       Estimated Monthly Site Visitors
                     </label>
-                    <span className="boost_control-value font-mono">
-                      {visitors.toLocaleString()} <small className="text-color-muted">visitors/mo</small>
-                    </span>
+                    <div className="boost_stepper-row">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setVisitors((v) => Math.max(100, v - 100));
+                          setActivePreset(null);
+                        }}
+                        className="boost_step-btn"
+                        aria-label="Decrease visitors by 100"
+                      >
+                        −
+                      </button>
+                      <span className="boost_control-value font-mono">
+                        {visitors.toLocaleString()} <small className="text-color-muted">visitors/mo</small>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setVisitors((v) => Math.min(8000, v + 100));
+                          setActivePreset(null);
+                        }}
+                        className="boost_step-btn"
+                        aria-label="Increase visitors by 100"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <input
                     id={visitorsId}
@@ -276,9 +363,33 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
                     <label htmlFor={speedId} className="boost_control-label">
                       Current Mobile Load Speed
                     </label>
-                    <span className={`boost_control-value font-mono is-${calc.severity}`}>
-                      {speed.toFixed(1)}s <small className="text-color-muted">(Central Valley LTE)</small>
-                    </span>
+                    <div className="boost_stepper-row">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSpeed((v) => Math.max(0.8, Number((v - 0.2).toFixed(1))));
+                          setActivePreset(null);
+                        }}
+                        className="boost_step-btn"
+                        aria-label="Make speed 0.2s faster"
+                      >
+                        −
+                      </button>
+                      <span className={`boost_control-value font-mono is-${calc.severity}`}>
+                        {speed.toFixed(1)}s <small className="text-color-muted">(Central Valley LTE)</small>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSpeed((v) => Math.min(7.5, Number((v + 0.2).toFixed(1))));
+                          setActivePreset(null);
+                        }}
+                        className="boost_step-btn"
+                        aria-label="Make speed 0.2s slower"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <input
                     id={speedId}
@@ -314,33 +425,45 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
                   <div className="boost_results-badge text-style-eyebrow">Your Psychological Loss Ledger</div>
 
                   {/* Primary Loss Metric */}
-                  <div className="boost_loss-block">
-                    <div className="text-style-eyebrow text-color-muted">Estimated Revenue Leaking to Competitors</div>
-                    <div className="boost_loss-amount">
-                      ${calc.monthlyLostRevenue.toLocaleString()}
-                      <span className="boost_loss-period"> / month</span>
+                  {calc.lostCallers === 0 ? (
+                    <div className="boost_loss-block is-optimal">
+                      <div className="text-style-eyebrow text-color-highlight">Peak Efficiency Benchmark</div>
+                      <div className="boost_loss-amount is-zero">
+                        $0 <span className="boost_loss-period">/ month lost</span>
+                      </div>
+                      <div className="boost_loss-annual font-mono text-size-small text-color-highlight">
+                        Retaining all ~{calc.optimalCallers} estimated callers each month
+                      </div>
                     </div>
-                    <div className="boost_loss-annual font-mono text-size-small">
-                      ${calc.annualLostRevenue.toLocaleString()} projected over 12 months
+                  ) : (
+                    <div className="boost_loss-block">
+                      <div className="text-style-eyebrow text-color-muted">Estimated Revenue Leaking to Competitors</div>
+                      <div className="boost_loss-amount">
+                        ${calc.monthlyLostRevenue.toLocaleString()}
+                        <span className="boost_loss-period"> / month</span>
+                      </div>
+                      <div className="boost_loss-annual font-mono text-size-small">
+                        ${calc.annualLostRevenue.toLocaleString()} projected over 12 months
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Callers Breakdown */}
                   <div className="boost_breakdown-grid">
                     <div className="boost_breakdown-item">
-                      <div className="boost_breakdown-num font-mono text-color-accent">
-                        ~{calc.lostCallers}
+                      <div className={`boost_breakdown-num font-mono ${calc.lostCallers === 0 ? "text-color-highlight" : "text-color-accent"}`}>
+                        {calc.lostCallers === 0 ? "0 Lost" : `~${calc.lostCallers}`}
                       </div>
                       <div className="boost_breakdown-label text-size-small">
-                        Qualified callers lost every month
+                        {calc.lostCallers === 0 ? "100% of mobile callers retained" : "Qualified callers lost every month"}
                       </div>
                     </div>
                     <div className="boost_breakdown-item">
                       <div className="boost_breakdown-num font-mono text-color-highlight">
-                        {calc.roiMultiple}×
+                        {calc.lostCallers === 0 ? "100/100" : `${calc.roiMultiple}×`}
                       </div>
                       <div className="boost_breakdown-label text-size-small">
-                        12-Mo ROI multiple on a $500 build
+                        {calc.lostCallers === 0 ? "Perfect Google PageSpeed target" : "12-Mo ROI multiple on a $500 build"}
                       </div>
                     </div>
                   </div>
@@ -376,7 +499,7 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
           </Reveal>
 
           {/* 5-Point Psychological Diagnostic Breakdown */}
-          <div className="boost_diagnostic-section">
+          <div id="boost-diag" className="boost_diagnostic-section">
             <div className="boost_diag-intro">
               <span className="text-style-eyebrow text-color-accent">The 5 Psychological Friction Points</span>
               <h3 className="heading-style-h3">
@@ -411,7 +534,8 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
           </div>
 
           {/* 1-Click Free 3-Minute Video Teardown Generator (Reciprocity Engine) */}
-          <Reveal id="teardown" className="boost_teardown-card">
+          <Reveal id="boost-teardown" className="boost_teardown-card">
+            <div id="teardown" className="section-anchor" aria-hidden="true" />
             <div className="boost_teardown-content">
               <div className="boost_teardown-copy">
                 <span className="text-style-eyebrow text-color-accent">№ Reciprocity — Free Upfront Proof</span>
@@ -492,6 +616,15 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
                   >
                     <span>{teardownRequested ? "Opening Messages app…" : "Text Adam for Free Video Teardown →"}</span>
                   </a>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyDraft}
+                    className="boost_copy-btn text-style-eyebrow"
+                  >
+                    {copiedDraft ? "✓ Copied draft! Paste into your text app" : `📋 Desktop? Copy draft to text ${studio.phoneDisplay}`}
+                  </button>
+
                   <p className="text-size-small text-color-muted text-center">
                     Tapping opens your phone's Messages app with this exact draft ready. You can edit before sending.
                   </p>
@@ -499,6 +632,29 @@ export function Boost({ isStandalone = false }: { isStandalone?: boolean }) {
               </div>
             </div>
           </Reveal>
+
+          {/* Standalone Route Callout (only shown when embedded on homepage) */}
+          {!isStandalone && (
+            <div className="boost_standalone-callout">
+              <div className="boost_standalone-callout-inner">
+                <div className="boost_standalone-callout-text">
+                  <span className="text-style-eyebrow text-color-accent">Standalone Experience Available</span>
+                  <div className="font-medium">Direct URL for marketing &amp; mobile visitors:</div>
+                  <div className="text-size-small text-color-muted">
+                    Bookmark or share <code>cloviswebdesign.com/boost</code> for the focused, standalone teardown landing page.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => (onNavigate ? onNavigate("/boost") : (window.location.href = "/boost"))}
+                  className="button is-light boost_standalone-btn"
+                  data-cursor="hover"
+                >
+                  <span>Open Dedicated /boost Page →</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

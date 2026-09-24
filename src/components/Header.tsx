@@ -55,7 +55,13 @@ export function LogoMark({ size = 30 }: { size?: number }) {
   );
 }
 
-export function Header({ isBoostPage = false }: { isBoostPage?: boolean }) {
+export function Header({
+  isBoostPage = false,
+  onNavigate,
+}: {
+  isBoostPage?: boolean;
+  onNavigate?: (path: string) => void;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -85,12 +91,76 @@ export function Header({ isBoostPage = false }: { isBoostPage?: boolean }) {
     return href;
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (!onNavigate) return;
+    e.preventDefault();
+    if (isBoostPage) {
+      onNavigate("/");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.pushState(null, "", "#top");
+    }
+  };
+
+  const handleLinkClick = (href: string, e: React.MouseEvent) => {
+    if (isBoostPage) {
+      if (href === "#boost") {
+        e.preventDefault();
+        const el = document.getElementById("boost-calc") || document.getElementById("boost");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+      if (onNavigate) {
+        e.preventDefault();
+        onNavigate(`/${href}`);
+      }
+      return;
+    }
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const id = href.replace(/^#/, "");
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        window.history.pushState(null, "", href);
+      }
+    }
+  };
+
   return (
-    <header className={`navbar_component ${scrolled ? "is-scrolled" : ""} ${hidden && !open ? "is-hidden" : ""} ${open ? "is-open" : ""}`}>
+    <header className={`navbar_component ${isBoostPage ? "is-boost-header" : ""} ${scrolled ? "is-scrolled" : ""} ${hidden && !open ? "is-hidden" : ""} ${open ? "is-open" : ""}`}>
+      {isBoostPage && (
+        <div className="boost-page_banner">
+          <div className="padding-global">
+            <div className="container-large boost-page_banner-inner">
+              <button
+                type="button"
+                onClick={() => (onNavigate ? onNavigate("/") : (window.location.href = "/"))}
+                className="boost-back-btn text-style-eyebrow"
+              >
+                ← Explore Full Studio Portfolio
+              </button>
+              <div className="boost-banner_badge text-style-eyebrow">
+                <span className="status_dot" aria-hidden="true" /> Live Conversion Engine · Clovis, CA
+              </div>
+              <a href={studio.phoneHref} className="boost-banner_phone text-style-eyebrow font-mono">
+                Direct: {studio.phoneDisplay}
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="padding-global">
         <div className="container-large">
           <div className="navbar_inner">
-            <a href={isBoostPage ? "/" : "#top"} className="navbar_logo" aria-label={`${studio.name} — home`} data-cursor="hover">
+            <a
+              href={isBoostPage ? "/" : "#top"}
+              onClick={handleLogoClick}
+              className="navbar_logo"
+              aria-label={`${studio.name} — home`}
+              data-cursor="hover"
+            >
               <LogoMark />
               <span className="navbar_logo-text">
                 Clovis<span className="navbar_logo-sub">Web Design</span>
@@ -101,7 +171,11 @@ export function Header({ isBoostPage = false }: { isBoostPage?: boolean }) {
               <ul className="navbar_links" role="list">
                 {navLinks.map((l) => (
                   <li key={l.href}>
-                    <a href={resolveHref(l.href)} className={`navbar_link ${l.href === "#boost" ? "is-boost-link" : ""}`}>
+                    <a
+                      href={resolveHref(l.href)}
+                      onClick={(e) => handleLinkClick(l.href, e)}
+                      className={`navbar_link ${l.href === "#boost" ? "is-boost-link" : ""}`}
+                    >
                       <span className="navbar_link-inner" data-text={l.label}>
                         {l.label}
                       </span>
@@ -142,7 +216,14 @@ export function Header({ isBoostPage = false }: { isBoostPage?: boolean }) {
           <ul role="list" className="navbar_overlay-links">
             {navLinks.map((l, i) => (
               <li key={l.href} style={{ "--i": i } as React.CSSProperties}>
-                <a href={resolveHref(l.href)} onClick={() => setOpen(false)} className="heading-style-h2">
+                <a
+                  href={resolveHref(l.href)}
+                  onClick={(e) => {
+                    setOpen(false);
+                    handleLinkClick(l.href, e);
+                  }}
+                  className="heading-style-h2"
+                >
                   <span className="text-style-eyebrow">0{i + 1}</span>
                   {l.label}
                 </a>
